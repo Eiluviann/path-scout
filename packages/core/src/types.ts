@@ -31,7 +31,7 @@ interface WildcardBase {
  * Pattern is compiled once at config load.
  */
 interface StaticWildcard extends WildcardBase {
-  pattern: string;
+  pattern: RegExp;
   patternFn?: never;
   recompileOnMatch?: never;
 }
@@ -42,7 +42,7 @@ interface StaticWildcard extends WildcardBase {
  * Set recompileOnMatch to true to call patternFn on every match instead.
  */
 interface DynamicWildcard extends WildcardBase {
-  patternFn: () => string;
+  patternFn: () => RegExp;
   pattern?: never;
   /**
    * When true, patternFn is called on every match instead of once at config load.
