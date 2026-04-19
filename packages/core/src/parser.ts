@@ -1,4 +1,4 @@
-import type { Query, ParsedQuery } from './types/index.js';
+import type { Query, ParsedQuery } from './types/query.types.js';
 
 /**
  * Parses a raw query string into an array of decoded path segments.

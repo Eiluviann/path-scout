@@ -1,4 +1,10 @@
-import { Wildcard, IRegisteredWildcard, PluginDefinition, DynamicWildcard } from './types/index.js';
+import {
+  Wildcard,
+  IRegisteredWildcard,
+  isStaticWildcard,
+  isDynamicWildcard,
+} from './types/wildcard.types.js';
+import { PluginDefinition } from './types/plugin.types.js';
 import {
   CollisionError,
   NamespaceCollisionError,
@@ -15,6 +21,7 @@ export class RegisteredWildcard implements IRegisteredWildcard {
   readonly name: string;
   readonly description: string;
   readonly examples?: string[];
+  readonly recompileOnMatch?: boolean;
   private readonly compiledPattern: RegExp | null;
   private readonly source: Wildcard;
 
@@ -22,6 +29,7 @@ export class RegisteredWildcard implements IRegisteredWildcard {
     this.name = wildcard.name;
     this.description = wildcard.description;
     this.examples = wildcard.examples;
+    this.recompileOnMatch = 'recompileOnMatch' in wildcard ? wildcard.recompileOnMatch : undefined;
     this.source = wildcard;
     this.compiledPattern = this.compile();
   }
@@ -36,8 +44,8 @@ export class RegisteredWildcard implements IRegisteredWildcard {
       return this.compiledPattern;
     }
 
-    if ('patternFn' in this.source) {
-      return (this.source as DynamicWildcard).patternFn();
+    if (isDynamicWildcard(this.source)) {
+      return this.source.patternFn();
     }
 
     throw new ValidationError(
@@ -50,11 +58,11 @@ export class RegisteredWildcard implements IRegisteredWildcard {
    * Returns null for recompileOnMatch wildcards — patternFn is called on every match instead.
    */
   private compile(): RegExp | null {
-    if ('pattern' in this.source && this.source.pattern) {
+    if (isStaticWildcard(this.source)) {
       return this.source.pattern;
     }
 
-    if ('patternFn' in this.source && this.source.patternFn) {
+    if (isDynamicWildcard(this.source)) {
       if (this.source.recompileOnMatch) return null;
       return this.source.patternFn();
     }

@@ -55,10 +55,33 @@ export interface IRegisteredWildcard {
   readonly name: string;
   readonly description: string;
   readonly examples?: string[];
+  readonly recompileOnMatch?: boolean;
   /**
    * Returns the regex pattern for this wildcard.
    * For recompileOnMatch wildcards, calls patternFn fresh each time.
    * For all others, returns the pre-compiled pattern.
    */
   getPattern(): RegExp;
+}
+
+/**
+ * Type guard that narrows a Wildcard to a StaticWildcard.
+ * A wildcard is static if it provides a pattern directly as a RegExp.
+ *
+ * @param wildcard - The wildcard to check
+ * @returns True if the wildcard is a StaticWildcard
+ */
+export function isStaticWildcard(wildcard: Wildcard): wildcard is StaticWildcard {
+  return 'pattern' in wildcard;
+}
+
+/**
+ * Type guard that narrows a Wildcard to a DynamicWildcard.
+ * A wildcard is dynamic if it provides a patternFn that returns a RegExp.
+ *
+ * @param wildcard - The wildcard to check
+ * @returns True if the wildcard is a DynamicWildcard
+ */
+export function isDynamicWildcard(wildcard: Wildcard): wildcard is DynamicWildcard {
+  return 'patternFn' in wildcard;
 }
