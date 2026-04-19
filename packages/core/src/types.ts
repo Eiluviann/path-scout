@@ -15,20 +15,48 @@ export interface RouteMatch {
 }
 
 /**
- * A typed placeholder used in route path segments.
- * Core wildcards are provided by @path-scout/core.
- * Plugins contribute additional wildcards prefixed with their namespace.
+ * Base fields shared by all wildcard types.
  */
-export interface Wildcard {
+interface WildcardBase {
   /** Identifier within the wildcard's namespace */
   name: string;
   /** Shown in help output and validation error messages */
   description: string;
-  /** A valid value used to smoke-test the validator at config load */
+  /** A valid value used to smoke-test the pattern at config load */
   example: string;
-  /** Either a static list of valid values or a synchronous validation function */
-  validate: string[] | ((segment: string) => boolean);
 }
+
+/**
+ * A wildcard with a static regex pattern.
+ * Pattern is compiled once at config load.
+ */
+interface StaticWildcard extends WildcardBase {
+  pattern: string;
+  patternFn?: never;
+  recompileOnMatch?: never;
+}
+
+/**
+ * A wildcard with a dynamically generated regex pattern.
+ * patternFn is called at config load by default.
+ * Set recompileOnMatch to true to call patternFn on every match instead.
+ */
+interface DynamicWildcard extends WildcardBase {
+  patternFn: () => string;
+  pattern?: never;
+  /**
+   * When true, patternFn is called on every match instead of once at config load.
+   * Use sparingly — prefer static patterns or load-time compilation where possible.
+   */
+  recompileOnMatch?: boolean;
+}
+
+/**
+ * A typed placeholder used in route path segments.
+ * Core wildcards are provided by @path-scout/core.
+ * Plugins contribute additional wildcards prefixed with their namespace.
+ */
+export type Wildcard = StaticWildcard | DynamicWildcard;
 
 /**
  * Defines a navigable action contributed by a plugin.

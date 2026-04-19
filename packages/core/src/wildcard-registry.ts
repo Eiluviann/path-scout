@@ -7,12 +7,21 @@ import {
 } from './errors.js';
 
 /**
+ * Internal representation of a registered wildcard.
+ * Extends Wildcard with a compiled regex pattern for efficient matching.
+ * compiledPattern is null when recompileOnMatch is true — patternFn is called on every match instead.
+ */
+type RegisteredWildcard = Wildcard & {
+  compiledPattern: RegExp | null;
+};
+
+/**
  * Registry of all wildcards available for use in route path segments.
  * Built once at config load — core wildcards are pre-loaded in the constructor,
  * plugin wildcards are registered via registerPlugin.
  */
 export class WildcardRegistry {
-  private wildcards: Map<string, Wildcard> = new Map();
+  private wildcards: Map<string, RegisteredWildcard> = new Map();
   private namespaces: string[] = [];
 
   constructor() {
@@ -20,19 +29,20 @@ export class WildcardRegistry {
       name: '*',
       description: 'Matches any non-empty segment with no validation',
       example: 'anything',
-      validate: (segment) => segment.length > 0,
+      pattern: /.+/,
     });
 
     this.register({
       name: 'word',
       description: 'Matches any non-empty string containing no spaces',
       example: 'hello',
-      validate: (segment) => segment.length > 0 && !segment.includes(' '),
+      pattern: /\S+/,
     });
   }
 
   /**
    * Registers a core wildcard into the registry.
+   * Compiles the pattern or patternFn result and stores it alongside the wildcard.
    * Throws CollisionError if a wildcard with the same name already exists.
    */
   register(wildcard: Wildcard): void {
@@ -43,7 +53,10 @@ export class WildcardRegistry {
       );
     }
 
-    this.wildcards.set(wildcard.name, wildcard);
+    this.wildcards.set(wildcard.name, {
+      ...wildcard,
+      compiledPattern: this.compile(wildcard),
+    });
   }
 
   /**
@@ -63,12 +76,16 @@ export class WildcardRegistry {
 
     for (const wildcard of plugin.wildcards ?? []) {
       const fullName = `${plugin.namespace}:${wildcard.name}`;
-      this.wildcards.set(fullName, { ...wildcard, name: fullName });
+      this.wildcards.set(fullName, {
+        ...wildcard,
+        name: fullName,
+        compiledPattern: this.compile(wildcard),
+      });
     }
   }
 
   /**
-   * Smoke-tests every registered wildcard's validate against its own example value.
+   * Smoke-tests every registered wildcard's compiled pattern against its own example value.
    * Collects all failures and throws a single ValidationError listing them all.
    * Should be called after all plugins are registered and before the trie is compiled.
    */
@@ -77,14 +94,13 @@ export class WildcardRegistry {
 
     for (const [name, wildcard] of this.wildcards) {
       try {
-        const valid = Array.isArray(wildcard.validate)
-          ? wildcard.validate.includes(wildcard.example)
-          : wildcard.validate(wildcard.example);
+        const pattern = wildcard.compiledPattern ?? this.resolvePattern(wildcard);
+        const valid = new RegExp(`^(?:${pattern.source})$`).test(wildcard.example);
 
         if (!valid) {
           failures.push(
             `Wildcard "{{${name}}}" rejected its own example value "${wildcard.example}". ` +
-            `Check the validate definition.`
+            `Check the pattern definition.`
           );
         }
       } catch (error) {
@@ -107,7 +123,7 @@ export class WildcardRegistry {
    * Throws UnknownWildcardError if no wildcard with that name exists.
    * @param name - Full reference name e.g. "word", "servicenow:env"
    */
-  resolve(name: string): Wildcard {
+  resolve(name: string): RegisteredWildcard {
     const wildcard = this.wildcards.get(name);
 
     if (!wildcard) {
@@ -118,5 +134,46 @@ export class WildcardRegistry {
     }
 
     return wildcard;
+  }
+
+  /**
+   * Returns the compiled pattern for a wildcard.
+   * For recompileOnMatch wildcards, calls patternFn fresh each time.
+   * For all others, returns the pre-compiled pattern.
+   * @param wildcard - The registered wildcard to get the pattern for
+   */
+  getPattern(wildcard: RegisteredWildcard): RegExp {
+    return wildcard.compiledPattern ?? this.resolvePattern(wildcard);
+  }
+
+  /**
+   * Compiles a wildcard's pattern at registration time.
+   * Returns null for dynamic wildcards with recompileOnMatch set to true.
+   */
+  private compile(wildcard: Wildcard): RegExp | null {
+    if ('pattern' in wildcard && wildcard.pattern) {
+      return wildcard.pattern;
+    }
+
+    if ('patternFn' in wildcard && wildcard.patternFn) {
+      if (wildcard.recompileOnMatch) return null;
+      return wildcard.patternFn();
+    }
+
+    return null;
+  }
+
+  /**
+   * Calls patternFn to resolve a fresh pattern.
+   * Only used for dynamic wildcards with recompileOnMatch set to true.
+   */
+  private resolvePattern(wildcard: Wildcard): RegExp {
+    if ('patternFn' in wildcard && wildcard.patternFn) {
+      return wildcard.patternFn();
+    }
+
+    throw new ValidationError(
+      `Wildcard "{{${wildcard.name}}}" has no pattern or patternFn defined.`
+    );
   }
 }
