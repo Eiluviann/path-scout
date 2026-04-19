@@ -1,0 +1,18 @@
+{
+  "name": "create-path-scout-plugin",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "bin": {
+    "create-path-scout-plugin": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "tsc --build --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@path-scout/core": "workspace:*"
+  }
+}

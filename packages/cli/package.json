@@ -1,0 +1,24 @@
+{
+  "name": "path-scout",
+  "version": "0.0.1",
+  "private": false,
+  "type": "module",
+  "bin": {
+    "path-scout": "./dist/index.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "dev": "tsc --build --watch",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@path-scout/core": "workspace:*"
+  }
+}

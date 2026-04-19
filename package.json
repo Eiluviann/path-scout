@@ -1,0 +1,19 @@
+{
+  "name": "path-scout-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "biome check .",
+    "format": "biome format . --write",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck"
+  },
+  "author": "Aurelio Solís (Eiluviann)",
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.0",
+  "devDependencies": {
+    "turbo": "^2.9.6",
+    "typescript": "^6.0.3"
+  }
+}
