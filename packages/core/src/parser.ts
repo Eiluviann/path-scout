@@ -1,13 +1,13 @@
-import { ParsedQuery } from './types';
+import type { Query, ParsedQuery } from './types/index.js';
 
 /**
  * Parses a raw query string into an array of decoded path segments.
- * The last segment may include modifiers such as inline params (?key=value)
- * or free text (space followed by text) — these are passed through as-is
- * and are the responsibility of the trie to match against route definitions.
+ * The last segment is passed through as-is — any additional structure
+ * such as query strings or free text is the responsibility of the
+ * route definition to handle via mixed segments and wildcards.
  *
- * @param raw - The raw query string from the browser search bar
- * @returns An array of decoded path segments
+ * @param query - The raw URL decoded string from the browser search bar
+ * @returns An array of path segments
  *
  * @example
  * parseQuery("dev/sc_req_item?active=true")
@@ -17,10 +17,9 @@ import { ParsedQuery } from './types';
  * parseQuery("dev/sc_cat_item some text here")
  * // → ["dev", "sc_cat_item some text here"]
  */
-export function parseQuery(raw: string): ParsedQuery {
-  return raw
+export function parseQuery(query: Query): ParsedQuery {
+  return query
     .trim()
     .split('/')
-    .map((segment) => decodeURIComponent(segment))
     .filter((segment) => segment.length > 0);
 }
