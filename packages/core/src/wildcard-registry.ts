@@ -11,7 +11,7 @@ import {
  * Extends Wildcard with a compiled regex pattern for efficient matching.
  * compiledPattern is null when recompileOnMatch is true — patternFn is called on every match instead.
  */
-type RegisteredWildcard = Wildcard & {
+export type RegisteredWildcard = Wildcard & {
   compiledPattern: RegExp | null;
 };
 
