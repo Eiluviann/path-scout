@@ -14,14 +14,14 @@ interface WildcardBase {
   examples?: string[];
 }
 
-interface StaticWildcard extends WildcardBase {
+export interface StaticWildcard extends WildcardBase {
   /** A static regex pattern compiled once at config load */
   pattern: RegExp;
   patternFn?: never;
   recompileOnMatch?: never;
 }
 
-interface DynamicWildcard extends WildcardBase {
+export interface DynamicWildcard extends WildcardBase {
   /** A function that returns a regex pattern */
   patternFn: () => RegExp;
   pattern?: never;
