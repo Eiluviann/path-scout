@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>No route found — path-scout</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --teal-light: #E1F5EE;
+      --teal-mid: #1D9E75;
+      --teal-dark: #0F6E56;
+      --bg: #f5f5f4;
+      --bg-primary: #ffffff;
+      --text-primary: #1c1c1a;
+      --text-secondary: #6b6b68;
+      --text-tertiary: #a8a8a5;
+      --border: rgba(0,0,0,0.1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --teal-light: #085041;
+        --teal-mid: #1D9E75;
+        --teal-dark: #9FE1CB;
+        --bg: #1a1a18;
+        --bg-primary: #242422;
+        --text-primary: #f0f0ee;
+        --text-secondary: #a8a8a5;
+        --text-tertiary: #6b6b68;
+        --border: rgba(255,255,255,0.1);
+      }
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3rem;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--teal-light);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 7px;
+    }
+
+    .logo-icon svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--teal-dark);
+    }
+
+    .logo-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 1rem;
+    }
+
+    .query-badge {
+      background: var(--teal-light);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      color: var(--teal-dark);
+      margin-bottom: 2.5rem;
+      display: inline-block;
+      word-break: break-all;
+    }
+
+    .separator {
+      border: none;
+      border-top: 0.5px solid var(--border);
+      margin-bottom: 2.5rem;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 3rem;
+    }
+
+    .search-row input {
+      flex: 1;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      padding: 0 14px;
+      height: 38px;
+      border-radius: 10px;
+      border: 0.5px solid var(--border);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .search-row input:focus {
+      border-color: var(--teal-mid);
+      box-shadow: 0 0 0 3px rgba(29, 158, 117, 0.15);
+    }
+
+    .search-row input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .search-row button {
+      padding: 0 20px;
+      height: 38px;
+      font-size: 13px;
+      border-radius: 10px;
+      background: var(--teal-mid);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      transition: opacity 0.15s;
+    }
+
+    .search-row button:hover { opacity: 0.85; }
+    .search-row button:active { opacity: 0.7; }
+
+    .footer {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M502.6 219.7C495.4 231.2 487.6 242.3 480 252.4C472.5 242.3 464.6 231.2 457.4 219.7C439.7 191.3 432 170.3 432 160C432 133.5 453.5 112 480 112C506.5 112 528 133.5 528 160C528 170.3 520.3 191.3 502.6 219.7zM491.4 315C516.8 285.1 576 210.2 576 160C576 107 533 64 480 64C427 64 384 107 384 160C384 193.3 409.9 237.3 434.8 272L392 272C343.4 272 304 311.4 304 360C304 408.6 343.4 448 392 448L488 448C510.1 448 528 465.9 528 488C528 510.1 510.1 528 488 528L241.8 528C239.1 531.8 236.3 535.6 233.6 539.2C222.9 553.4 212.3 566.1 203.6 576L488 576C536.6 576 576 536.6 576 488C576 439.4 536.6 400 488 400L392 400C369.9 400 352 382.1 352 360C352 337.9 369.9 320 392 320L476.9 320C482 321.1 487.6 319.4 491.4 315zM182.9 472.4C175.6 483.4 167.6 494.1 160 503.6C152.4 494.1 144.4 483.4 137.1 472.4C119.4 445.7 112 425.9 112 416C112 389.5 133.5 368 160 368C186.5 368 208 389.5 208 416C208 425.9 200.6 445.7 182.9 472.4zM201.9 528C227.8 494.9 256 450.7 256 416C256 363 213 320 160 320C107 320 64 363 64 416C64 466.5 123.8 537 149 564.4C155 570.9 165 570.9 170.9 564.4C171 564.3 171.1 564.2 171.2 564.1C171.5 563.8 171.8 563.4 172.1 563.1C174.9 560 178.1 556.4 181.6 552.4C181.7 552.3 181.7 552.3 181.8 552.2C187.9 545.2 194.8 537 201.8 528z"/></svg>
+      </div>
+      <span class="logo-name">path-scout</span>
+    </div>
+
+    <h1>No route found</h1>
+
+    <div class="query-badge" id="query">{{query}}</div>
+
+    <hr class="separator" />
+
+    <form class="search-row" onsubmit="handleSearch(event)">
+      <input type="text" placeholder="try another query…" id="search" autofocus />
+      <button type="submit">Go</button>
+    </form>
+
+    <p class="footer">running on port {{port}}</p>
+  </div>
+
+  <script>
+    function handleSearch(e) {
+      e.preventDefault();
+      const q = document.getElementById('search').value.trim();
+      if (q) window.location.href = '/go?q=' + encodeURIComponent(q);
+    }
+  </script>
+</body>
+</html>
