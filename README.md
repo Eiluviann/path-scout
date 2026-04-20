@@ -1,6 +1,6 @@
-# Path Scout
+# Path Scout\*
 
-**The shortest path between you and your tools.***
+**The shortest path between you and your tools**
 
 *\*cookies not included*
 
