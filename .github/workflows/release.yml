@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Version bump type
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm turbo build
+
+      - name: Test
+        run: pnpm turbo test
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump versions
+        id: bump
+        run: |
+          CURRENT=$(node -p "require('./packages/core/package.json').version")
+
+          IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT"
+          if [ "${{ inputs.bump }}" = "major" ]; then
+            NEXT="$((MAJOR + 1)).0.0"
+          elif [ "${{ inputs.bump }}" = "minor" ]; then
+            NEXT="${MAJOR}.$((MINOR + 1)).0"
+          else
+            NEXT="${MAJOR}.${MINOR}.$((PATCH + 1))"
+          fi
+
+          echo "version=${NEXT}" >> $GITHUB_OUTPUT
+          echo "Bumping from ${CURRENT} to ${NEXT}"
+
+          sed -i "s/\"version\": \"${CURRENT}\"/\"version\": \"${NEXT}\"/" \
+            packages/core/package.json \
+            packages/cli/package.json \
+            plugins/servicenow/package.json
+
+      - name: Commit and tag
+        run: |
+          git add packages/core/package.json packages/cli/package.json plugins/servicenow/package.json
+          git commit -m "chore: release v${{ steps.bump.outputs.version }}"
+          git tag "v${{ steps.bump.outputs.version }}"
+          git push origin main
+          git push origin "v${{ steps.bump.outputs.version }}"
+
+      - name: Publish packages
+        run: |
+          pnpm --filter @path-scout/core publish --access public --no-git-checks --provenance
+          pnpm --filter path-scout publish --access public --no-git-checks --provenance
+          pnpm --filter @path-scout/plugin-servicenow publish --access public --no-git-checks --provenance
+        env:
+          NPM_CONFIG_PROVENANCE: true
