@@ -131,4 +131,4 @@ Contributions are welcome. Please open an issue before submitting a pull request
 
 ## 📄 License
 
-MIT
+AGPL v3
