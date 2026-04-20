@@ -1,10 +1,5 @@
-import {
-  Wildcard,
-  IRegisteredWildcard,
-  isStaticWildcard,
-  isDynamicWildcard,
-} from './types/wildcard.types.js';
-import { PluginDefinition } from './types/plugin.types.js';
+import { Wildcard, IRegisteredWildcard, isStaticWildcard, isDynamicWildcard } from './types/wildcard.types.js';
+import { Plugin } from './types/plugin.types.js';
 import {
   CollisionError,
   NamespaceCollisionError,
@@ -116,7 +111,7 @@ export class WildcardRegistry {
    * Automatically prefixes each wildcard name with the plugin namespace.
    * Throws NamespaceCollisionError if the plugin namespace is already registered.
    */
-  registerPlugin(plugin: PluginDefinition): void {
+  registerPlugin(plugin: Plugin): void {
     if (this.namespaces.includes(plugin.namespace)) {
       throw new NamespaceCollisionError(
         `Plugin namespace "${plugin.namespace}" is already registered. ` +

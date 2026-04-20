@@ -21,7 +21,18 @@ importers:
         specifier: workspace:*
         version: link:../core
 
-  packages/core: {}
+  packages/core:
+    dependencies:
+      chokidar:
+        specifier: ^5.0.0
+        version: 5.0.0
+      jiti:
+        specifier: ^2.6.1
+        version: 2.6.1
+    devDependencies:
+      '@types/node':
+        specifier: ^25.6.0
+        version: 25.6.0
 
   packages/create-plugin:
     dependencies:
@@ -61,6 +72,21 @@ packages:
     cpu: [arm64]
     os: [win32]
 
+  '@types/node@25.6.0':
+    resolution: {integrity: sha512-+qIYRKdNYJwY3vRCZMdJbPLJAtGjQBudzZzdzwQYkEPQd+PJGixUL5QfvCLDaULoLv+RhT3LDkwEfKaAkgSmNQ==}
+
+  chokidar@5.0.0:
+    resolution: {integrity: sha512-TQMmc3w+5AxjpL8iIiwebF73dRDF4fBIieAqGn9RGCWaEVwQ6Fb2cGe31Yns0RRIzii5goJ1Y7xbMwo1TxMplw==}
+    engines: {node: '>= 20.19.0'}
+
+  jiti@2.6.1:
+    resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
+    hasBin: true
+
+  readdirp@5.0.0:
+    resolution: {integrity: sha512-9u/XQ1pvrQtYyMpZe7DXKv2p5CNvyVwzUB6uhLAnQwHMSgKMBR62lc7AHljaeteeHXn11XTAaLLUVZYVZyuRBQ==}
+    engines: {node: '>= 20.19.0'}
+
   turbo@2.9.6:
     resolution: {integrity: sha512-+v2QJey7ZUeUiuigkU+uFfklvNUyPI2VO2vBpMYJA+a1hKFLFiKtUYlRHdb3P9CrAvMzi0upbjI4WT+zKtqkBg==}
     hasBin: true
@@ -69,6 +95,9 @@ packages:
     resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  undici-types@7.19.2:
+    resolution: {integrity: sha512-qYVnV5OEm2AW8cJMCpdV20CDyaN3g0AjDlOGf1OW4iaDEx8MwdtChUp4zu4H0VP3nDRF/8RKWH+IPp9uW0YGZg==}
 
 snapshots:
 
@@ -90,6 +119,18 @@ snapshots:
   '@turbo/windows-arm64@2.9.6':
     optional: true
 
+  '@types/node@25.6.0':
+    dependencies:
+      undici-types: 7.19.2
+
+  chokidar@5.0.0:
+    dependencies:
+      readdirp: 5.0.0
+
+  jiti@2.6.1: {}
+
+  readdirp@5.0.0: {}
+
   turbo@2.9.6:
     optionalDependencies:
       '@turbo/darwin-64': 2.9.6
@@ -100,3 +141,5 @@ snapshots:
       '@turbo/windows-arm64': 2.9.6
 
   typescript@6.0.3: {}
+
+  undici-types@7.19.2: {}
