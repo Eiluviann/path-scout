@@ -1,11 +1,17 @@
-import type { RouteConfig } from './route.types.js';
-import type { Plugin } from './plugin.types.js';
+import type { RouteConfig } from "./route.types.js";
+import type { Plugin } from "./plugin.types.js";
 
 /**
  * The complete Path Scout configuration exported from path-scout.config.ts.
  * Defines the route structure and plugins to load.
  */
 export interface PathScoutConfig {
+  /**
+   * The port the HTTP server listens on.
+   * Defaults to 7000 if not specified.
+   * @default 7000
+   */
+  port?: number;
   /**
    * Plugins to load. Each plugin is an instantiated class that contributes
    * wildcards and actions available for use in the route configuration.
@@ -49,5 +55,5 @@ export function defineConfig(config: PathScoutConfig): PathScoutConfig {
  */
 export const CONFIG_LOCATIONS = [
   `${process.env.HOME}/.config/path-scout/path-scout.config.ts`,
-  './config/path-scout.config.ts',
+  "./config/path-scout.config.ts",
 ] as const;

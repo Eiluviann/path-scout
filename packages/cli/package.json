@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.2.0",
+    "@hono/node-server": "^1.19.14",
     "@path-scout/core": "workspace:*",
     "better-sqlite3": "^12.9.0",
     "citty": "^0.2.2",
