@@ -1,7 +1,8 @@
 import { createJiti } from 'jiti';
 import { watch, FSWatcher } from 'chokidar';
 import { existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { PathScoutConfig } from './types/config.types.js';
 import { CONFIG_LOCATIONS } from './types/config.types.js';
 import { WildcardRegistry } from './wildcard-registry.js';
@@ -87,9 +88,13 @@ export class ConfigLoader {
    * On failure, throws — callers handle the error differently on initial load vs reload.
    */
   private async load(): Promise<void> {
+    const coreIndex = join(dirname(fileURLToPath(import.meta.url)), 'index.js');
     const jiti = createJiti(this.configPath!, {
       moduleCache: false,
       interopDefault: true,
+      alias: {
+        'path-scout': coreIndex,
+      },
     });
 
     process.env.NODE_PATH = PLUGIN_DIR;
