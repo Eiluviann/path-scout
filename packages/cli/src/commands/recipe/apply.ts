@@ -1,9 +1,9 @@
 import { defineCommand } from 'citty';
 import { consola } from 'consola';
 import * as p from '@clack/prompts';
-import { execSync } from 'node:child_process';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
+import { runPnpm } from '../../utils/pnpm.js';
 import { servicenowRecipe } from './recipes/servicenow.js';
 
 const recipes = [servicenowRecipe];
@@ -78,9 +78,12 @@ export const apply = defineCommand({
 
       for (const plugin of recipe.plugins) {
         try {
-          execSync(`npm install ${plugin} --prefix ${PLUGIN_DIR}`, {
-            stdio: 'inherit',
-          });
+          const localPlugin = join(process.cwd(), 'plugins', plugin.replace('@path-scout/plugin-', ''));
+          if (existsSync(localPlugin)) {
+            p.log.info(`Using local plugin: ${plugin}`);
+            continue;
+          }
+          runPnpm(`add ${plugin} --dir ${PLUGIN_DIR}`);
         } catch {
           consola.error(`Failed to install ${plugin}`);
           process.exit(1);

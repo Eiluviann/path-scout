@@ -28,10 +28,16 @@ export class ServiceNowPlugin implements Plugin {
   readonly namespace = 'sn';
   readonly wildcards;
   readonly actions: Record<string, ActionDefinition>;
+  [key: string]: unknown;
 
   constructor(config: ServiceNowPluginConfig) {
     this.wildcards = buildWildcards(config);
     this.actions = buildActions(config);
+
+    // Promote actions to top level so users can reference sn.openInstance etc.
+    for (const [name, action] of Object.entries(this.actions)) {
+      this[name] = action;
+    }
   }
 }
 

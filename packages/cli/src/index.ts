@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+export { defineConfig } from '@path-scout/core';
+
 import { defineCommand, runMain } from 'citty';
 import { start } from './commands/start.js';
 import { stop } from './commands/stop.js';

@@ -134,7 +134,7 @@ export default defineConfig({
   port: 7000,
   plugins: [sn],
   routes: {
-    \`\${Object.keys(sn.envs).join('|')}\`: {
+    "{{sn:env}}": {
       _action: sn.openInstance,
       _args: { env: '{{sn:env}}' },
       'login': {

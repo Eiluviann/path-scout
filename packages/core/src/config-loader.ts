@@ -1,10 +1,13 @@
 import { createJiti } from 'jiti';
 import { watch, FSWatcher } from 'chokidar';
 import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import type { PathScoutConfig } from './types/config.types.js';
 import { CONFIG_LOCATIONS } from './types/config.types.js';
 import { WildcardRegistry } from './wildcard-registry.js';
 import { Trie } from './trie.js';
+
+const PLUGIN_DIR = join(process.env.HOME!, '.config', 'path-scout', '.npm', 'node_modules');
 
 /**
  * Orchestrates config loading, registry building, trie compilation and file watching.
@@ -84,7 +87,13 @@ export class ConfigLoader {
    * On failure, throws — callers handle the error differently on initial load vs reload.
    */
   private async load(): Promise<void> {
-    const jiti = createJiti(import.meta.url);
+    const jiti = createJiti(this.configPath!, {
+      moduleCache: false,
+      interopDefault: true,
+    });
+
+    process.env.NODE_PATH = PLUGIN_DIR;
+
     const config = await jiti.import(this.configPath!) as PathScoutConfig;
 
     const registry = new WildcardRegistry();
