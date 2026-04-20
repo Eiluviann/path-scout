@@ -1,5 +1,5 @@
-import { IRegisteredWildcard } from './wildcard.types.js';
-import { ActionDefinition } from './action.types.js';
+import type { IRegisteredWildcard } from './wildcard.types.js';
+import type { ActionDefinition } from './action.types.js';
 
 /**
  * A literal string token within a segment pattern.
@@ -30,22 +30,12 @@ export interface WildcardPatternToken {
 export type PatternToken = LiteralPatternToken | WildcardPatternToken;
 
 /**
- * A single node in the trie representing one level of a path.
- * Each node matches one segment via its pattern and points to child nodes.
- * Action and args may be present on both intermediate and terminal nodes —
- * an intermediate node with action and args will execute when the query
- * terminates at that level, even if longer routes continue from it.
- * Terminal nodes (no children) must have action and args.
+ * Base fields shared by all trie nodes.
+ * Extended by ITrieNode and TrieRootNode.
  */
-export interface TrieNode {
-  /**
-   * Ordered list of tokens defining what this node matches against.
-   * A single LiteralPatternToken uses strict equality.
-   * Any other combination compiles to a regex.
-   */
-  pattern: PatternToken[];
+export interface IBaseTrieNode {
   /** Child nodes evaluated in declaration order — first match wins */
-  children: TrieNode[];
+  children: ITrieNode[];
   /** Present when a route terminates or passes through this node */
   action?: ActionDefinition;
   /**
@@ -57,29 +47,55 @@ export interface TrieNode {
 }
 
 /**
- * The root node of the trie. Identical to TrieNode but without a pattern —
- * the root has no segment to match against, it is purely an entry point
+ * Contract for a single node in the trie representing one level of a path.
+ * Implemented by the TrieNode class in trie.ts.
+ * Action and args may be present on both intermediate and terminal nodes —
+ * an intermediate node with action and args will execute when the query
+ * terminates at that level, even if longer routes continue from it.
+ * Terminal nodes (no children) must have action and args.
+ */
+export interface ITrieNode extends IBaseTrieNode {
+  /** Original segment key string used for deduplication during build */
+  readonly _key: string;
+  /**
+   * Ordered list of tokens defining what this node matches against.
+   * A single LiteralPatternToken uses strict equality.
+   * Any other combination compiles to a regex.
+   */
+  readonly pattern: PatternToken[];
+  /**
+   * Returns the compiled regex pattern for this node's pattern tokens.
+   * Returns compiledPattern if available, otherwise builds fresh.
+   * Fresh builds occur when any wildcard in the pattern has recompileOnMatch set to true.
+   */
+  getPattern(): RegExp;
+}
+
+/**
+ * The root node of the trie. Has no pattern since it is purely an entry point
  * into the trie whose children are evaluated against the first path segment.
  */
-export interface TrieRootNode extends Omit<TrieNode, 'pattern'> {}
+export interface TrieRootNode extends IBaseTrieNode {}
 
 /**
  * The result of a successful trie match.
- * Contains everything needed to interpolate args and invoke the action.
+ * Contains the matched action and args, and exposes normalized captured
+ * wildcard values via getCapturedWildcards().
+ * Implemented by TrieMatchResult in trie.ts.
  */
 export interface TrieMatch {
   /** The action to invoke */
-  action: ActionDefinition;
+  readonly action: ActionDefinition;
   /**
    * The raw args from the matched node, before interpolation.
    * References like {{env}} are not yet resolved.
    * @example { instance: '{{env}}', table: '{{sn:table}}', filter: 'active=true' }
    */
-  args: Record<string, string>;
+  readonly args: Record<string, string>;
   /**
-   * Wildcard values collected during trie traversal.
-   * Keys are wildcard names, values are the matched segments.
-   * @example { env: 'dev', 'sn:table': 'sc_req_item' }
+   * Returns normalized captured wildcard values collected during trie traversal.
+   * Single occurrence wildcards are returned without index e.g. "word".
+   * Multiple occurrence wildcards are returned with zero-based index e.g. "word[0]", "word[1]".
    */
-  capturedWildcards: Record<string, string>;
+  getCapturedWildcards(): Record<string, string>;
 }

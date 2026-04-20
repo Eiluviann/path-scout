@@ -59,7 +59,7 @@ export function parseSegmentKey(
  * @param tokens - The ordered list of pattern tokens
  * @returns A compiled RegExp
  */
-export function compileSegmentPattern(tokens: PatternToken[]): RegExp | null {
+export function compileSegmentPattern(tokens: PatternToken[]): RegExp {
   let pattern = '^';
 
   for (const token of tokens) {
