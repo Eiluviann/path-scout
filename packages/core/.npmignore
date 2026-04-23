@@ -3,3 +3,5 @@ tsconfig.tsbuildinfo
 src/
 vitest.config.ts
 tsconfig.json
+tsconfig.build.json
+tsconfig.build.cjs.json
