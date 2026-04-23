@@ -1,0 +1,17 @@
+FROM node:20-alpine
+
+RUN apk add --no-cache python3 make g++ git
+
+# Install the exact pnpm version declared in package.json
+RUN corepack enable && corepack prepare pnpm@10.33.0 --activate
+
+ENV CI=true
+
+WORKDIR /app
+COPY . .
+
+RUN echo "=== pnpm install ===" && pnpm install --frozen-lockfile
+RUN echo "=== typecheck ===" && pnpm typecheck
+RUN echo "=== lint ===" && pnpm lint
+RUN echo "=== build ===" && pnpm build
+RUN echo "=== test ===" && pnpm test

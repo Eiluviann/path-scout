@@ -88,6 +88,7 @@ export class ConfigLoader {
    * On failure, throws — callers handle the error differently on initial load vs reload.
    */
   private async load(): Promise<void> {
+    // @ts-ignore TS1343 — import.meta is ESM-only; CJS build emits this as-is (ConfigLoader is not callable from CJS)
     const coreIndex = join(dirname(fileURLToPath(import.meta.url)), 'index.js');
     const jiti = createJiti(this.configPath!, {
       moduleCache: false,

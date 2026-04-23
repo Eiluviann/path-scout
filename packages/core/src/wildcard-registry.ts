@@ -1,5 +1,6 @@
-import { Wildcard, IRegisteredWildcard, isStaticWildcard, isDynamicWildcard } from './types/wildcard.types.js';
-import { Plugin } from './types/plugin.types.js';
+import type { Wildcard, IRegisteredWildcard } from './types/wildcard.types.js';
+import { isStaticWildcard, isDynamicWildcard } from './types/wildcard.types.js';
+import type { Plugin } from './types/plugin.types.js';
 import {
   CollisionError,
   NamespaceCollisionError,
