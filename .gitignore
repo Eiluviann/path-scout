@@ -14,4 +14,3 @@ dist/
 # Local env
 .env
 .env.local
-.npmrc
