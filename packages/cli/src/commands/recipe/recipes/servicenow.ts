@@ -131,75 +131,75 @@ export default defineConfig({
   plugins: [sn],
   routes: {
     "{{sn:env}}": {
-      _action: sn.openInstance,
+      _action: sn.actions.openInstance,
       _args: { env: '{{sn:env}}' },
       'login': {
-        _action: sn.instanceLogin,
+        _action: sn.actions.instanceLogin,
         _args: { env: '{{sn:env}}' },
       },
       'imp': {
         '{{sn:env}}': {
-          _action: sn.openRemoteInstance,
+          _action: sn.actions.openRemoteInstance,
           _args: { env: '{{sn:env[0]}}', targetEnv: '{{sn:env[1]}}' },
         },
       },
       'bg': {
-        _action: sn.openBackgroundScript,
+        _action: sn.actions.openBackgroundScript,
         _args: { env: '{{sn:env}}' },
       },
       'cuds': {
-        _action: sn.openCurrentUpdateSet,
+        _action: sn.actions.openCurrentUpdateSet,
         _args: { env: '{{sn:env}}' },
       },
       'p.config': {
-        _action: sn.openPortalRecord,
+        _action: sn.actions.openPortalRecord,
         _args: { env: '{{sn:env}}' },
       },
       'p': {
-        _action: sn.openPortal,
+        _action: sn.actions.openPortal,
         _args: { env: '{{sn:env}}' },
         'catit#{{sn:sys_id}}': {
-          _action: sn.openCatalogItemOnPortal,
+          _action: sn.actions.openCatalogItemOnPortal,
           _args: { env: '{{sn:env}}', sys_id: '{{sn:sys_id}}' },
         },
         'ordguide#{{sn:sys_id}}': {
-          _action: sn.openOrderGuideOnPortal,
+          _action: sn.actions.openOrderGuideOnPortal,
           _args: { env: '{{sn:env}}', sys_id: '{{sn:sys_id}}' },
         },
         '{{word}}': {
-          _action: sn.openPortalPage,
+          _action: sn.actions.openPortalPage,
           _args: { env: '{{sn:env}}', word: '{{word}}' },
         },
       },
       '{{sn:table}}.new': {
-        _action: sn.openNewRecordForm,
+        _action: sn.actions.openNewRecordForm,
         _args: { env: '{{sn:env}}', table: '{{sn:table}}' },
       },
       '{{sn:table}}.form': {
-        _action: sn.openRecordForm,
+        _action: sn.actions.openRecordForm,
         _args: { env: '{{sn:env}}', table: '{{sn:table}}' },
       },
       '{{sn:table}}.config': {
-        _action: sn.openTableConfig,
+        _action: sn.actions.openTableConfig,
         _args: { env: '{{sn:env}}', table: '{{sn:table}}' },
       },
       '{{sn:table}} {{*}}': {
-        _action: sn.searchTable,
+        _action: sn.actions.searchTable,
         _args: { env: '{{sn:env}}', table: '{{sn:table}}', text: '{{*}}' },
       },
       '{{sn:table}}?{{*}}': {
-        _action: sn.searchTableByQuery,
+        _action: sn.actions.searchTableByQuery,
         _args: { env: '{{sn:env}}', table: '{{sn:table}}', query: '{{*}}' },
       },
       '{{sn:table}}#{{sn:sys_id}}': {
-        _action: sn.openRecordById,
+        _action: sn.actions.openRecordById,
         _args: { env: '{{sn:env}}', table: '{{sn:table}}', sys_id: '{{sn:sys_id}}' },
       },
       '{{sn:table}}': {
-        _action: sn.openTableList,
+        _action: sn.actions.openTableList,
         _args: { env: '{{sn:env}}', table: '{{sn:table}}' },
         '{{sn:filter}}': {
-          _action: sn.searchTableByFilter,
+          _action: sn.actions.searchTableByFilter,
           _args: { env: '{{sn:env}}', table: '{{sn:table}}', filter: '{{sn:filter}}' },
         },
       },

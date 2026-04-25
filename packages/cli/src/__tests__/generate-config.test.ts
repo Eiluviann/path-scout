@@ -49,8 +49,8 @@ describe('servicenowRecipe.generateConfig', () => {
 
   it('includes core routes', () => {
     const config = servicenowRecipe.generateConfig(baseValues);
-    expect(config).toContain('_action: sn.openInstance');
-    expect(config).toContain('_action: sn.openTableList');
-    expect(config).toContain('_action: sn.searchTableByQuery');
+    expect(config).toContain('_action: sn.actions.openInstance');
+    expect(config).toContain('_action: sn.actions.openTableList');
+    expect(config).toContain('_action: sn.actions.searchTableByQuery');
   });
 });
