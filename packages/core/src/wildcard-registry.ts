@@ -73,7 +73,7 @@ export class RegisteredWildcard implements IRegisteredWildcard {
  */
 export class WildcardRegistry {
   private wildcards: Map<string, RegisteredWildcard> = new Map();
-  private namespaces: string[] = [];
+  private namespaces: Set<string> = new Set();
 
   constructor() {
     this.register({
@@ -112,14 +112,14 @@ export class WildcardRegistry {
    * Throws NamespaceCollisionError if the plugin namespace is already registered.
    */
   registerPlugin(plugin: Plugin): void {
-    if (this.namespaces.includes(plugin.namespace)) {
+    if (this.namespaces.has(plugin.namespace)) {
       throw new NamespaceCollisionError(
         `Plugin namespace "${plugin.namespace}" is already registered. ` +
         `Each plugin must have a unique namespace.`
       );
     }
 
-    this.namespaces.push(plugin.namespace);
+    this.namespaces.add(plugin.namespace);
 
     for (const wildcard of plugin.wildcards ?? []) {
       const fullName = `${plugin.namespace}:${wildcard.name}`;
@@ -144,7 +144,7 @@ export class WildcardRegistry {
       for (const example of wildcard.examples) {
         try {
           const pattern = wildcard.getPattern();
-          const valid = new RegExp(`^(?:${pattern.source})$`).test(example);
+          const valid = new RegExp(`^(?:${pattern.source})$`, pattern.flags).test(example);
 
           if (!valid) {
             failures.push(

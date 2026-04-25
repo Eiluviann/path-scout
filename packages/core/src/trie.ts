@@ -88,7 +88,11 @@ class TrieNode implements ITrieNode {
   constructor(key: string, pattern: PatternToken[]) {
     this._key = key;
     this.pattern = pattern;
-    this.compiledPattern = compileSegmentPattern(this.pattern);
+    // Skip caching when any wildcard requires recompilation on every match.
+    const needsRecompile = pattern.some(
+      t => t.type === 'wildcard' && t.wildcard.recompileOnMatch
+    );
+    this.compiledPattern = needsRecompile ? null : compileSegmentPattern(this.pattern);
   }
 
   /**

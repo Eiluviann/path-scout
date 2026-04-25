@@ -1,3 +1,5 @@
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import type { RouteConfig } from "./route.types.js";
 import type { Plugin } from "./plugin.types.js";
 
@@ -54,6 +56,6 @@ export function defineConfig(config: PathScoutConfig): PathScoutConfig {
  * Development: ./config/path-scout.config.ts (monorepo root)
  */
 export const CONFIG_LOCATIONS = [
-  `${process.env.HOME}/.config/path-scout/path-scout.config.ts`,
-  "./config/path-scout.config.ts",
-] as const;
+  join(homedir(), '.config', 'path-scout', 'path-scout.config.ts'),
+  './config/path-scout.config.ts',
+];
