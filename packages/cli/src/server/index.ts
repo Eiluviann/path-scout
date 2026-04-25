@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { serve } from '@hono/node-server';
+import type { ServerType } from '@hono/node-server';
 import type { PathScoutConfig, Trie } from '@path-scout/core';
 import { interpolate, parseQuery } from '@path-scout/core';
 import { Hono } from 'hono';
@@ -28,6 +29,7 @@ export class Server {
   private readonly stats: StatsStore;
   private config: PathScoutConfig;
   private readonly app: Hono;
+  private handle: ServerType | null = null;
 
   constructor(deps: ServerDeps) {
     this.trie = deps.trie;
@@ -61,9 +63,26 @@ export class Server {
   start(): void {
     const port = this.config.port ?? 7000;
 
-    serve({
+    this.handle = serve({
       fetch: this.app.fetch,
       port,
+    });
+  }
+
+  /**
+   * Stops the HTTP server and releases the port.
+   */
+  stop(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!this.handle) {
+        resolve();
+        return;
+      }
+      this.handle.close((err) => {
+        this.handle = null;
+        if (err) reject(err);
+        else resolve();
+      });
     });
   }
 
