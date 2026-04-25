@@ -4,7 +4,7 @@
   "description": "Scaffold a new path-scout plugin",
   "private": false,
   "type": "module",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "bin": {
     "create-path-scout-plugin": "./dist/index.js"
   },

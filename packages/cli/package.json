@@ -4,7 +4,7 @@
   "description": "CLI for path-scout — a fast browser bookmark redirector",
   "private": false,
   "type": "module",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "main": "./dist/index.js",
   "bin": {
     "path-scout": "./dist/index.js"

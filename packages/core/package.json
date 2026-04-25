@@ -4,7 +4,7 @@
   "description": "Core library for path-scout — trie-based URL routing and plugin system",
   "private": false,
   "type": "module",
-  "license": "ISC",
+  "license": "AGPL-3.0-only",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
