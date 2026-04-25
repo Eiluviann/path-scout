@@ -73,6 +73,28 @@ describe('buildActions', () => {
     });
   });
 
+  describe('openCatalogItemOnPortal', () => {
+    it('builds the portal catalog item URL with sys_id', () => {
+      expect(
+        actions.openCatalogItemOnPortal.resolve({
+          env: 'dev',
+          sys_id: 'abc1234567890abc1234567890abc123',
+        })
+      ).toBe('https://myinstance-dev.service-now.com/esc?id=sc_cat_item&sys_id=abc1234567890abc1234567890abc123');
+    });
+  });
+
+  describe('openOrderGuideOnPortal', () => {
+    it('builds the portal order guide URL with sys_id', () => {
+      expect(
+        actions.openOrderGuideOnPortal.resolve({
+          env: 'dev',
+          sys_id: 'abc1234567890abc1234567890abc123',
+        })
+      ).toBe('https://myinstance-dev.service-now.com/esc?id=sc_cat_item_guide&sys_id=abc1234567890abc1234567890abc123');
+    });
+  });
+
   describe('searchTableByFilter', () => {
     it('resolves a filter alias and URL-encodes the query', () => {
       expect(actions.searchTableByFilter.resolve({ env: 'dev', table: 'incident', filter: 'active' })).toBe(
