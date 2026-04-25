@@ -153,6 +153,34 @@ describe('Trie', () => {
     });
   });
 
+  describe('recompileOnMatch wildcards', () => {
+    it('calls patternFn on every match instead of using a cached pattern', () => {
+      let callCount = 0;
+      registry.register({
+        name: 'dynamic',
+        description: 'Dynamic wildcard',
+        patternFn: () => {
+          callCount++;
+          return /\w+/;
+        },
+        recompileOnMatch: true,
+      });
+
+      const config: RouteConfig = {
+        '{{dynamic}}': {
+          _action: mockAction,
+          _args: {},
+        },
+      };
+      trie.build(config, registry);
+
+      trie.match(['foo']);
+      trie.match(['bar']);
+
+      expect(callCount).toBeGreaterThanOrEqual(2);
+    });
+  });
+
   describe('declaration order — first match wins', () => {
     it('matches the first route when multiple routes could match', () => {
       const firstAction: ActionDefinition = { ...mockAction, name: 'First Action' };

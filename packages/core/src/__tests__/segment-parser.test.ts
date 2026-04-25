@@ -54,6 +54,14 @@ describe('parseSegmentKey', () => {
     it('throws UnknownWildcardError for unregistered wildcard', () => {
       expect(() => parseSegmentKey('{{unknown}}', registry)).toThrow();
     });
+
+    it('throws ValidationError for unclosed {{', () => {
+      expect(() => parseSegmentKey('{{word', registry)).toThrow(/unclosed/i);
+    });
+
+    it('throws ValidationError for unclosed {{ mid-segment', () => {
+      expect(() => parseSegmentKey('prefix{{word', registry)).toThrow(/unclosed/i);
+    });
   });
 
   describe('mixed segments', () => {
