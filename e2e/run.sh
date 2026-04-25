@@ -5,12 +5,20 @@
 #
 # What it does:
 #   1. Builds the full monorepo from source.
-#   2. Creates a temp HOME directory so the server is completely isolated
-#      from any real user config or stats database on this machine.
-#   3. Copies the fixture config into that temp HOME so the server has
-#      known routes to serve.
-#   4. Starts the server as a background subprocess.
-#   5. Runs e2e/test.mjs which polls until ready, then makes HTTP assertions.
+#   2. Creates a temp HOME directory so the CLI and server are completely
+#      isolated from any real user config or stats database on this machine.
+#   3. Drives the CLI interactively via expect (PTY):
+#        a. "path-scout init" — sets the port to 7000.
+#        b. "path-scout recipe apply ServiceNow" — configures a ServiceNow
+#           environment named "dev" pointing at e2etest.service-now.com.
+#      A preload module (e2e/preload.mjs) is injected via --import to work
+#      around a Node.js readline bug that causes p.confirm() to stop
+#      receiving keypresses when preceded by p.text() prompts.
+#   4. Starts the server as a background subprocess using the generated config.
+#      JITI_ALIAS is set so the config's ServiceNow plugin import resolves to
+#      the locally-built plugin without needing a separate npm install.
+#   5. Runs e2e/test.mjs which polls until ready, then makes HTTP assertions
+#      against the ServiceNow routes that were just configured interactively.
 #   6. Always cleans up the server process and temp dirs on exit.
 #
 # Usage (from monorepo root):
@@ -23,7 +31,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 E2E_DIR="$ROOT/e2e"
 CLI_ENTRY="$ROOT/packages/cli/dist/index.js"
-PORT=7801
+PRELOAD="$E2E_DIR/preload.mjs"
+PORT=7000
 
 # ---------------------------------------------------------------------------
 # Cleanup on exit
@@ -53,21 +62,36 @@ cd "$ROOT"
 pnpm build
 
 # ---------------------------------------------------------------------------
-# Isolated config
+# Isolated environment
 # ---------------------------------------------------------------------------
 
 TEMP_HOME="$(mktemp -d)"
-CONFIG_DIR="$TEMP_HOME/.config/path-scout"
-mkdir -p "$CONFIG_DIR"
-cp "$E2E_DIR/fixtures/path-scout.config.ts" "$CONFIG_DIR/path-scout.config.ts"
-echo "→ Config written to $CONFIG_DIR"
+echo "→ Temp HOME: $TEMP_HOME"
+
+# ---------------------------------------------------------------------------
+# Drive interactive CLI prompts
+# ---------------------------------------------------------------------------
+
+echo "→ Driving interactive CLI prompts via expect…"
+expect "$E2E_DIR/interact.exp" "$CLI_ENTRY" "$PRELOAD" "$TEMP_HOME"
+
+echo "→ Generated config:"
+cat "$TEMP_HOME/.config/path-scout/path-scout.config.ts"
+echo ""
 
 # ---------------------------------------------------------------------------
 # Start server
 # ---------------------------------------------------------------------------
 
+# Symlink the locally-built plugin into the config dir's node_modules so
+# jiti's CJS resolver finds it when loading the generated config.
+PLUGIN_SRC="$ROOT/plugins/servicenow"
+CONFIG_NM="$TEMP_HOME/.config/path-scout/node_modules/@path-scout"
+mkdir -p "$CONFIG_NM"
+ln -s "$PLUGIN_SRC" "$CONFIG_NM/plugin-servicenow"
+
 echo "→ Starting path-scout on port $PORT…"
-HOME="$TEMP_HOME" PATH_SCOUT_PORT="$PORT" node "$CLI_ENTRY" start &
+HOME="$TEMP_HOME" node "$CLI_ENTRY" start &
 SERVER_PID=$!
 
 # ---------------------------------------------------------------------------

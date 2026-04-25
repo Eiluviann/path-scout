@@ -1,0 +1,133 @@
+#!/usr/bin/env expect
+# e2e/interact.exp
+#
+# Drives the path-scout CLI interactive prompts for end-to-end testing.
+# Must be called by e2e/run.sh with three arguments:
+#
+#   expect e2e/interact.exp <CLI_ENTRY> <PRELOAD_MJS> <TEMP_HOME>
+#
+# What it does:
+#   1. Runs "path-scout init" and enters port 7000.
+#   2. Runs "path-scout recipe apply ServiceNow", answering every prompt:
+#        - Overwrite existing config? → y
+#        - Environment alias         → dev
+#        - URL subdomain             → e2etest
+#        - Service Portal suffix     → <Enter> (default "sp")
+#        - Add another environment?  → <Enter> (default No)
+#        - Which table aliases?      → <Enter> (accept pre-selected defaults)
+#
+# The preload module (e2e/preload.mjs) is loaded via --import to fix a Node.js
+# readline bug that prevents p.confirm() from receiving keypresses after
+# preceding p.text() calls.
+
+set timeout 30
+
+set entry   [lindex $argv 0]
+set preload [lindex $argv 1]
+set home    [lindex $argv 2]
+
+proc die {msg} {
+  puts stderr "FATAL: $msg"
+  exit 1
+}
+
+# ── 1. path-scout init ────────────────────────────────────────────────────────
+
+puts "→ Running path-scout init"
+
+spawn -noecho env HOME=$home NO_COLOR=1 \
+  node --import "file://$preload" $entry init
+
+expect {
+  -re "port should|Which port" {}
+  timeout { die "timeout waiting for port prompt in init" }
+  eof     { die "eof before port prompt in init" }
+}
+after 300
+send "7000\r"
+
+expect {
+  -re "Config created|outro" {}
+  eof     {}
+  timeout { die "timeout waiting for init to finish" }
+}
+catch { expect eof }
+set r [wait]
+if { [lindex $r 3] != 0 } {
+  die "path-scout init exited [lindex $r 3]"
+}
+puts "→ init complete"
+
+# ── 2. path-scout recipe apply ServiceNow ────────────────────────────────────
+
+puts "→ Running path-scout recipe apply ServiceNow"
+
+spawn -noecho env HOME=$home NO_COLOR=1 \
+  node --import "file://$preload" $entry recipe apply ServiceNow
+
+# Overwrite existing config (created by init above)?
+expect {
+  "Overwrite" {}
+  timeout { die "timeout waiting for overwrite prompt" }
+  eof     { die "eof waiting for overwrite prompt" }
+}
+after 300
+send "y"
+
+# Environment alias
+expect {
+  "Environment alias" {}
+  timeout { die "timeout waiting for alias prompt" }
+  eof     { die "eof waiting for alias prompt" }
+}
+after 300
+send "dev\r"
+
+# URL subdomain
+expect {
+  "URL subdomain" {}
+  timeout { die "timeout waiting for URL subdomain prompt" }
+  eof     { die "eof waiting for URL subdomain prompt" }
+}
+after 300
+send "e2etest\r"
+
+# Service Portal suffix (just Enter → default "sp")
+expect {
+  "Portal suffix" {}
+  timeout { die "timeout waiting for portal suffix prompt" }
+  eof     { die "eof waiting for portal suffix prompt" }
+}
+after 300
+send "\r"
+
+# Add another environment? (Enter → default No / false)
+expect {
+  "another environment" {}
+  timeout { die "timeout waiting for 'add another' prompt" }
+  eof     { die "eof waiting for 'add another' prompt" }
+}
+after 500
+send "\r"
+
+# Which table aliases? (Enter → accept pre-selected defaults)
+expect {
+  "table aliases" {}
+  timeout { die "timeout waiting for table aliases prompt" }
+  eof     { die "eof waiting for table aliases prompt" }
+}
+after 500
+send "\r"
+
+# Wait for config write confirmation
+expect {
+  "Config written" {}
+  eof     {}
+  timeout { die "timeout waiting for recipe apply to finish" }
+}
+catch { expect eof }
+set r [wait]
+if { [lindex $r 3] != 0 } {
+  die "path-scout recipe apply exited [lindex $r 3]"
+}
+puts "→ recipe apply complete"
