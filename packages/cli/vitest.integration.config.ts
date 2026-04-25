@@ -9,7 +9,7 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    include: ['src/e2e/**/*.e2e.test.ts'],
+    include: ['src/e2e/**/*.integration.test.ts'],
     testTimeout: 10000,
   },
 });
