@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { Trie } from '../trie.js';
-import { WildcardRegistry } from '../wildcard-registry.js';
-import type { RouteConfig } from '../types/route.types.js';
 import type { ActionDefinition } from '../types/action.types.js';
+import type { RouteConfig } from '../types/route.types.js';
+import { WildcardRegistry } from '../wildcard-registry.js';
 
 const mockAction: ActionDefinition = {
   name: 'Mock Action',
@@ -30,7 +30,7 @@ describe('Trie', () => {
       trie.build(config, registry);
       const result = trie.match(['dev']);
       expect(result).not.toBeNull();
-      expect(result!.action).toBe(mockAction);
+      expect(result?.action).toBe(mockAction);
     });
 
     it('matches nested literal segments', () => {
@@ -71,7 +71,7 @@ describe('Trie', () => {
       trie.build(config, registry);
       const result = trie.match(['dev']);
       expect(result).not.toBeNull();
-      expect(result!.getCapturedWildcards()).toEqual({ word: 'dev' });
+      expect(result?.getCapturedWildcards()).toEqual({ word: 'dev' });
     });
 
     it('matches nested wildcard segments and captures all values', () => {
@@ -86,7 +86,7 @@ describe('Trie', () => {
       trie.build(config, registry);
       const result = trie.match(['dev', 'incidents']);
       expect(result).not.toBeNull();
-      expect(result!.getCapturedWildcards()).toEqual({
+      expect(result?.getCapturedWildcards()).toEqual({
         'word[0]': 'dev',
         'word[1]': 'incidents',
       });
@@ -95,12 +95,14 @@ describe('Trie', () => {
     it('matches plugin wildcards', () => {
       registry.registerPlugin({
         namespace: 'sn',
-        wildcards: [{
-          name: 'env',
-          description: 'ServiceNow environment',
-          examples: ['dev', 'test', 'prod'],
-          pattern: /dev|test|prod/,
-        }],
+        wildcards: [
+          {
+            name: 'env',
+            description: 'ServiceNow environment',
+            examples: ['dev', 'test', 'prod'],
+            pattern: /dev|test|prod/,
+          },
+        ],
         actions: {},
       });
 
@@ -113,17 +115,19 @@ describe('Trie', () => {
       trie.build(config, registry);
       const result = trie.match(['dev']);
       expect(result).not.toBeNull();
-      expect(result!.getCapturedWildcards()).toEqual({ 'sn:env': 'dev' });
+      expect(result?.getCapturedWildcards()).toEqual({ 'sn:env': 'dev' });
     });
 
     it('does not match when wildcard pattern rejects segment', () => {
       registry.registerPlugin({
         namespace: 'sn',
-        wildcards: [{
-          name: 'env',
-          description: 'ServiceNow environment',
-          pattern: /dev|test|prod/,
-        }],
+        wildcards: [
+          {
+            name: 'env',
+            description: 'ServiceNow environment',
+            pattern: /dev|test|prod/,
+          },
+        ],
         actions: {},
       });
 
@@ -149,7 +153,7 @@ describe('Trie', () => {
       trie.build(config, registry);
       const result = trie.match(['v1']);
       expect(result).not.toBeNull();
-      expect(result!.getCapturedWildcards()).toEqual({ word: 'v1'.match(/^v(\S+)$/)?.[1] });
+      expect(result?.getCapturedWildcards()).toEqual({ word: 'v1'.match(/^v(\S+)$/)?.[1] });
     });
   });
 
@@ -198,7 +202,7 @@ describe('Trie', () => {
       };
       trie.build(config, registry);
       const result = trie.match(['anything']);
-      expect(result!.action.name).toBe('First Action');
+      expect(result?.action.name).toBe('First Action');
     });
   });
 
@@ -230,7 +234,7 @@ describe('Trie', () => {
       };
       trie.build(config, registry);
       const result = trie.match(['dev']);
-      expect(result!.getCapturedWildcards()).toEqual({ word: 'dev' });
+      expect(result?.getCapturedWildcards()).toEqual({ word: 'dev' });
     });
 
     it('keeps indexes for multiple occurrences of the same wildcard', () => {
@@ -244,7 +248,7 @@ describe('Trie', () => {
       };
       trie.build(config, registry);
       const result = trie.match(['dev', 'incidents']);
-      expect(result!.getCapturedWildcards()).toEqual({
+      expect(result?.getCapturedWildcards()).toEqual({
         'word[0]': 'dev',
         'word[1]': 'incidents',
       });

@@ -19,11 +19,7 @@ export function buildWildcards(config: ServiceNowPluginConfig): Wildcard[] {
       name: 'env',
       description: 'A configured ServiceNow environment alias e.g. dev, prod',
       examples: envKeys,
-      pattern: new RegExp(
-        envKeys
-          .map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-          .join('|')
-      ),
+      pattern: new RegExp(envKeys.map((k) => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')),
     },
     {
       name: 'table',
@@ -46,11 +42,7 @@ export function buildWildcards(config: ServiceNowPluginConfig): Wildcard[] {
       name: 'filter',
       description: 'A configured ServiceNow filter alias e.g. active, mine',
       examples: filterKeys,
-      pattern: new RegExp(
-        filterKeys
-          .map(f => f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-          .join('|')
-      ),
+      pattern: new RegExp(filterKeys.map((f) => f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')),
     });
   }
 

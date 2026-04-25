@@ -1,6 +1,6 @@
+import { ValidationError } from '../errors.js';
 import type { PatternToken } from '../types/trie.types.js';
 import type { WildcardRegistry } from '../wildcard-registry.js';
-import { ValidationError } from '../errors.js';
 import { escapeRegex } from './regex.js';
 
 /**
@@ -22,10 +22,7 @@ import { escapeRegex } from './regex.js';
  * //     { type: 'wildcard', wildcard: RegisteredWildcard(word) }
  * //   ]
  */
-export function parseSegmentKey(
-  key: string,
-  registry: WildcardRegistry
-): PatternToken[] {
+export function parseSegmentKey(key: string, registry: WildcardRegistry): PatternToken[] {
   const tokens: PatternToken[] = [];
   let remaining = key;
 
@@ -43,9 +40,7 @@ export function parseSegmentKey(
 
     const closeBracketIndex = remaining.indexOf('}}', openBracketIndex);
     if (closeBracketIndex === -1) {
-      throw new ValidationError(
-        `Malformed segment key "${key}": unclosed "{{" at position ${openBracketIndex}.`
-      );
+      throw new ValidationError(`Malformed segment key "${key}": unclosed "{{" at position ${openBracketIndex}.`);
     }
     const name = remaining.slice(openBracketIndex + 2, closeBracketIndex);
     const wildcard = registry.resolve(name);

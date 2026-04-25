@@ -1,11 +1,11 @@
-import { Wildcard, IRegisteredWildcard, isStaticWildcard, isDynamicWildcard } from './types/wildcard.types.js';
-import { Plugin } from './types/plugin.types.js';
+import { CollisionError, NamespaceCollisionError, UnknownWildcardError, ValidationError } from './errors.js';
+import type { Plugin } from './types/plugin.types.js';
 import {
-  CollisionError,
-  NamespaceCollisionError,
-  UnknownWildcardError,
-  ValidationError,
-} from './errors.js';
+  type IRegisteredWildcard,
+  isDynamicWildcard,
+  isStaticWildcard,
+  type Wildcard,
+} from './types/wildcard.types.js';
 
 /**
  * Internal representation of a registered wildcard.
@@ -43,9 +43,7 @@ export class RegisteredWildcard implements IRegisteredWildcard {
       return this.source.patternFn();
     }
 
-    throw new ValidationError(
-      `Wildcard "${this.name}" has no pattern or patternFn defined.`
-    );
+    throw new ValidationError(`Wildcard "${this.name}" has no pattern or patternFn defined.`);
   }
 
   /**
@@ -99,7 +97,7 @@ export class WildcardRegistry {
     if (this.wildcards.has(wildcard.name)) {
       throw new CollisionError(
         `Wildcard "{{${wildcard.name}}}" is already registered as a core wildcard. ` +
-        `Core wildcard names are reserved and cannot be overridden.`
+          `Core wildcard names are reserved and cannot be overridden.`
       );
     }
 
@@ -114,8 +112,7 @@ export class WildcardRegistry {
   registerPlugin(plugin: Plugin): void {
     if (this.namespaces.has(plugin.namespace)) {
       throw new NamespaceCollisionError(
-        `Plugin namespace "${plugin.namespace}" is already registered. ` +
-        `Each plugin must have a unique namespace.`
+        `Plugin namespace "${plugin.namespace}" is already registered. Each plugin must have a unique namespace.`
       );
     }
 
@@ -123,10 +120,7 @@ export class WildcardRegistry {
 
     for (const wildcard of plugin.wildcards ?? []) {
       const fullName = `${plugin.namespace}:${wildcard.name}`;
-      this.wildcards.set(
-        fullName,
-        new RegisteredWildcard({ ...wildcard, name: fullName })
-      );
+      this.wildcards.set(fullName, new RegisteredWildcard({ ...wildcard, name: fullName }));
     }
   }
 
@@ -147,24 +141,19 @@ export class WildcardRegistry {
           const valid = new RegExp(`^(?:${pattern.source})$`, pattern.flags).test(example);
 
           if (!valid) {
-            failures.push(
-              `Wildcard "{{${name}}}" rejected example value "${example}". ` +
-              `Check the pattern definition.`
-            );
+            failures.push(`Wildcard "{{${name}}}" rejected example value "${example}". Check the pattern definition.`);
           }
         } catch (error) {
           failures.push(
             `Wildcard "{{${name}}}" threw an unexpected error while validating example value "${example}": ` +
-            `${error instanceof Error ? error.message : String(error)}.`
+              `${error instanceof Error ? error.message : String(error)}.`
           );
         }
       }
     }
 
     if (failures.length > 0) {
-      throw new ValidationError(
-        `Wildcard validation failed:\n${failures.map(f => `  - ${f}`).join('\n')}`
-      );
+      throw new ValidationError(`Wildcard validation failed:\n${failures.map((f) => `  - ${f}`).join('\n')}`);
     }
   }
 
@@ -179,7 +168,7 @@ export class WildcardRegistry {
     if (!wildcard) {
       throw new UnknownWildcardError(
         `Route references "{{${name}}}" but no wildcard with that name exists in the registry. ` +
-        `Did you forget to register the plugin that contributes this wildcard?`
+          `Did you forget to register the plugin that contributes this wildcard?`
       );
     }
 

@@ -1,5 +1,5 @@
-import type { IRegisteredWildcard } from './wildcard.types.js';
 import type { ActionDefinition } from './action.types.js';
+import type { IRegisteredWildcard } from './wildcard.types.js';
 
 /**
  * A literal string token within a segment pattern.

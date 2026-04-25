@@ -1,8 +1,11 @@
+import type { PathScoutConfig, Trie } from '@path-scout/core';
+import { ConfigLoader } from '@path-scout/core';
 import { defineCommand } from 'citty';
 import { consola } from 'consola';
-import { ConfigLoader } from '@path-scout/core';
-import type { Trie, PathScoutConfig } from '@path-scout/core';
 import { Server } from '../server/index.js';
+import { launchdInstall } from '../service/launchd.js';
+import { isMac, isWindows } from '../service/platform.js';
+import { systemdInstall } from '../service/systemd.js';
 import { StatsStore } from '../stats/index.js';
 
 export const start = defineCommand({
@@ -10,7 +13,37 @@ export const start = defineCommand({
     name: 'start',
     description: 'Start the Path Scout server',
   },
-  async run() {
+  args: {
+    daemon: {
+      type: 'boolean',
+      description: 'Install and start as a background service (launchd on macOS, systemd on Linux)',
+      default: false,
+    },
+  },
+  async run({ args }) {
+    if (args.daemon) {
+      if (isWindows()) {
+        consola.warn('Daemon mode is not yet supported on Windows.');
+        process.exit(1);
+      }
+
+      const execPath = process.argv[1];
+
+      try {
+        if (isMac()) {
+          launchdInstall(execPath);
+        } else {
+          systemdInstall(execPath);
+        }
+        consola.success('path-scout installed as a service and started');
+      } catch (error) {
+        consola.error('Failed to install service:', error);
+        process.exit(1);
+      }
+
+      return;
+    }
+
     const stats = new StatsStore();
     const loader = new ConfigLoader();
 

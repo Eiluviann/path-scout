@@ -1,9 +1,9 @@
-import { defineCommand } from 'citty';
-import { consola } from 'consola';
-import * as p from '@clack/prompts';
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import * as p from '@clack/prompts';
+import { defineCommand } from 'citty';
+import { consola } from 'consola';
 import { runPnpm } from '../../utils/pnpm.js';
 import { servicenowRecipe } from './recipes/servicenow.js';
 
@@ -33,7 +33,7 @@ export const apply = defineCommand({
     if (!recipeName) {
       const selected = await p.select({
         message: 'Which recipe would you like to apply?',
-        options: recipes.map(r => ({
+        options: recipes.map((r) => ({
           value: r.name,
           label: r.name,
           hint: r.description,
@@ -48,9 +48,7 @@ export const apply = defineCommand({
       recipeName = selected as string;
     }
 
-    const recipe = recipes.find(
-      r => r.name.toLowerCase() === recipeName!.toLowerCase()
-    );
+    const recipe = recipes.find((r) => r.name.toLowerCase() === recipeName?.toLowerCase());
 
     if (!recipe) {
       consola.error(`Recipe "${recipeName}" not found. Run path-scout recipe list to see available recipes.`);

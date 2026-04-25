@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { servicenowRecipe } from '../commands/recipe/recipes/servicenow.js';
 
 describe('servicenowRecipe.generateConfig', () => {
@@ -21,8 +21,8 @@ describe('servicenowRecipe.generateConfig', () => {
 
   it('includes configured environments', () => {
     const config = servicenowRecipe.generateConfig(baseValues);
-    expect(config).toContain('dev: { url: \'myinstance-dev\', portal: \'sp\' }');
-    expect(config).toContain('prod: { url: \'myinstance\', portal: \'sp\' }');
+    expect(config).toContain("dev: { url: 'myinstance-dev', portal: 'sp' }");
+    expect(config).toContain("prod: { url: 'myinstance', portal: 'sp' }");
   });
 
   it('includes configured aliases', () => {

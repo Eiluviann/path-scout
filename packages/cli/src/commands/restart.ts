@@ -1,8 +1,8 @@
 import { defineCommand } from 'citty';
 import { consola } from 'consola';
+import { launchdIsInstalled, launchdRestart } from '../service/launchd.js';
 import { isMac, isWindows } from '../service/platform.js';
-import { launchdRestart, launchdIsInstalled } from '../service/launchd.js';
-import { systemdRestart, systemdIsInstalled } from '../service/systemd.js';
+import { systemdIsInstalled, systemdRestart } from '../service/systemd.js';
 
 export const restart = defineCommand({
   meta: {

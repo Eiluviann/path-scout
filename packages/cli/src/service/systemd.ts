@@ -1,14 +1,10 @@
 import { execSync } from 'node:child_process';
-import { writeFileSync, existsSync, rmSync } from 'node:fs';
+import { existsSync, rmSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 const SERVICE_NAME = 'path-scout';
-const SERVICE_PATH = join(
-  homedir(),
-  '.config/systemd/user',
-  `${SERVICE_NAME}.service`
-);
+const SERVICE_PATH = join(homedir(), '.config/systemd/user', `${SERVICE_NAME}.service`);
 
 /**
  * Generates the systemd unit file for the path-scout service.

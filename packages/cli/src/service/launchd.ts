@@ -1,14 +1,10 @@
 import { execSync } from 'node:child_process';
-import { writeFileSync, existsSync, rmSync } from 'node:fs';
+import { existsSync, rmSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 const PLIST_LABEL = 'com.path-scout.server';
-const PLIST_PATH = join(
-  homedir(),
-  'Library/LaunchAgents',
-  `${PLIST_LABEL}.plist`
-);
+const PLIST_PATH = join(homedir(), 'Library/LaunchAgents', `${PLIST_LABEL}.plist`);
 
 /**
  * Generates the launchd plist XML for the path-scout service.

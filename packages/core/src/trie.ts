@@ -1,10 +1,10 @@
-import type { ParsedQuery } from './types/query.types.js';
-import type { TrieMatch, PatternToken, ITrieNode, IBaseTrieNode, TrieRootNode } from './types/trie.types.js';
 import type { ActionDefinition } from './types/action.types.js';
+import type { ParsedQuery } from './types/query.types.js';
 import type { RouteConfig, RouteNode } from './types/route.types.js';
 import { isResolvableRouteNode } from './types/route.types.js';
-import { WildcardRegistry } from './wildcard-registry.js';
-import { parseSegmentKey, compileSegmentPattern } from './utils/segment-parser.js';
+import type { IBaseTrieNode, ITrieNode, PatternToken, TrieMatch, TrieRootNode } from './types/trie.types.js';
+import { compileSegmentPattern, parseSegmentKey } from './utils/segment-parser.js';
+import type { WildcardRegistry } from './wildcard-registry.js';
 
 /**
  * A single wildcard capture collected during trie traversal.
@@ -34,11 +34,7 @@ class TrieMatchResult implements TrieMatch {
    */
   private readonly _capturedWildcards: CapturedWildcard[];
 
-  constructor(
-    action: ActionDefinition,
-    args: Record<string, string>,
-    capturedWildcards: CapturedWildcard[]
-  ) {
+  constructor(action: ActionDefinition, args: Record<string, string>, capturedWildcards: CapturedWildcard[]) {
     this.action = action;
     this.args = args;
     this._capturedWildcards = capturedWildcards;
@@ -89,9 +85,7 @@ class TrieNode implements ITrieNode {
     this._key = key;
     this.pattern = pattern;
     // Skip caching when any wildcard requires recompilation on every match.
-    const needsRecompile = pattern.some(
-      t => t.type === 'wildcard' && t.wildcard.recompileOnMatch
-    );
+    const needsRecompile = pattern.some((t) => t.type === 'wildcard' && t.wildcard.recompileOnMatch);
     this.compiledPattern = needsRecompile ? null : compileSegmentPattern(this.pattern);
   }
 
@@ -151,9 +145,7 @@ export class Trie {
  * [{ name: 'word', value: 'dev' }, { name: 'word', value: 'prod' }]
  * → { 'word[0]': 'dev', 'word[1]': 'prod' }
  */
-function normalizeCapturedWildcards(
-  capturedWildcards: CapturedWildcard[]
-): Record<string, string> {
+function normalizeCapturedWildcards(capturedWildcards: CapturedWildcard[]): Record<string, string> {
   const counts: Record<string, number> = {};
   for (const { name } of capturedWildcards) {
     counts[name] = (counts[name] ?? 0) + 1;
@@ -190,11 +182,7 @@ function createRootNode(): TrieRootNode {
  * @param key - The original segment key string
  * @param pattern - The compiled pattern tokens for the new node if created
  */
-function findOrCreateChild(
-  node: IBaseTrieNode,
-  key: string,
-  pattern: PatternToken[]
-): TrieNode {
+function findOrCreateChild(node: IBaseTrieNode, key: string, pattern: PatternToken[]): TrieNode {
   const existing = node.children.find((child) => child._key === key);
   if (existing) return existing as TrieNode;
 
@@ -212,11 +200,7 @@ function findOrCreateChild(
  * @param node - The current trie node to build into
  * @param registry - The wildcard registry to resolve wildcard references against
  */
-function buildNode(
-  config: RouteConfig | RouteNode,
-  node: IBaseTrieNode,
-  registry: WildcardRegistry
-): void {
+function buildNode(config: RouteConfig | RouteNode, node: IBaseTrieNode, registry: WildcardRegistry): void {
   for (const [key, value] of Object.entries(config)) {
     if (key === '_action' || key === '_args') continue;
 
@@ -257,10 +241,7 @@ function matchesPattern(node: TrieNode, segment: string): boolean {
  * @param node - The matched trie node
  * @param segment - The matched segment string
  */
-function extractCaptures(
-  node: TrieNode,
-  segment: string
-): CapturedWildcard[] {
+function extractCaptures(node: TrieNode, segment: string): CapturedWildcard[] {
   if (node.pattern.length === 1 && node.pattern[0].type === 'literal') {
     return [];
   }
@@ -289,11 +270,7 @@ function extractCaptures(
  * @param segments - The remaining query segments to match
  * @param captured - Wildcard captures collected so far during traversal
  */
-function matchNode(
-  node: IBaseTrieNode,
-  segments: string[],
-  captured: CapturedWildcard[]
-): TrieMatch | null {
+function matchNode(node: IBaseTrieNode, segments: string[], captured: CapturedWildcard[]): TrieMatch | null {
   if (segments.length === 0) {
     if (node.action && node.args) {
       return new TrieMatchResult(node.action, node.args, captured);
@@ -307,10 +284,7 @@ function matchNode(
     const trieChild = child as TrieNode;
 
     if (matchesPattern(trieChild, head)) {
-      const newCaptures = [
-        ...captured,
-        ...extractCaptures(trieChild, head),
-      ];
+      const newCaptures = [...captured, ...extractCaptures(trieChild, head)];
 
       const result = matchNode(trieChild, tail, newCaptures);
       if (result) return result;
