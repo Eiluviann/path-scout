@@ -7,7 +7,7 @@
     "create-path-scout-plugin": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build tsconfig.build.json",
     "dev": "tsc --build --watch",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist *.tsbuildinfo"
