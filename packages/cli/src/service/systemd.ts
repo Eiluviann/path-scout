@@ -1,10 +1,11 @@
 import { execSync } from 'node:child_process';
 import { writeFileSync, existsSync, rmSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 const SERVICE_NAME = 'path-scout';
 const SERVICE_PATH = join(
-  process.env.HOME!,
+  homedir(),
   '.config/systemd/user',
   `${SERVICE_NAME}.service`
 );
@@ -15,14 +16,13 @@ const SERVICE_PATH = join(
  * @param execPath - Absolute path to the path-scout executable
  * @param port - Port the server should run on
  */
-function generateUnit(execPath: string, port: number): string {
+function generateUnit(execPath: string): string {
   return `[Unit]
 Description=path-scout bookmark server
 After=network.target
 
 [Service]
 ExecStart=${execPath} start
-Environment=PORT=${port}
 Restart=always
 RestartSec=5
 
@@ -37,8 +37,8 @@ WantedBy=default.target
  * @param execPath - Absolute path to the path-scout executable
  * @param port - Port the server should run on
  */
-export function systemdInstall(execPath: string, port: number): void {
-  writeFileSync(SERVICE_PATH, generateUnit(execPath, port), 'utf-8');
+export function systemdInstall(execPath: string): void {
+  writeFileSync(SERVICE_PATH, generateUnit(execPath), 'utf-8');
   execSync('systemctl --user daemon-reload');
   execSync(`systemctl --user enable ${SERVICE_NAME}`);
   execSync(`systemctl --user start ${SERVICE_NAME}`);

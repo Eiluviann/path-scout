@@ -1,9 +1,10 @@
 import Database from 'better-sqlite3';
 import { existsSync, mkdirSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { UsageStat } from '../types/stats.types.js';
 
-const DB_DIR = join(process.env.HOME!, '.config', 'path-scout');
+const DB_DIR = join(homedir(), '.config', 'path-scout');
 const DB_PATH = join(DB_DIR, 'stats.db');
 
 /**

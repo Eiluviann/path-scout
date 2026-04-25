@@ -10,14 +10,7 @@ export const start = defineCommand({
     name: 'start',
     description: 'Start the Path Scout server',
   },
-  args: {
-    daemon: {
-      type: 'boolean',
-      description: 'Run as a background service',
-      default: false,
-    },
-  },
-  async run({ args }) {
+  async run() {
     const stats = new StatsStore();
     const loader = new ConfigLoader();
 
