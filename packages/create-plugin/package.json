@@ -1,10 +1,15 @@
 {
   "name": "create-path-scout-plugin",
-  "version": "0.0.1",
+  "version": "0.0.7",
+  "description": "Scaffold a new path-scout plugin",
   "private": false,
   "type": "module",
+  "license": "ISC",
   "bin": {
     "create-path-scout-plugin": "./dist/index.js"
+  },
+  "engines": {
+    "node": ">=20.10.0"
   },
   "scripts": {
     "build": "tsc --build tsconfig.build.json",
@@ -14,5 +19,11 @@
   },
   "dependencies": {
     "@path-scout/core": "workspace:*"
-  }
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  },
+  "files": [
+    "dist"
+  ]
 }

@@ -1,8 +1,10 @@
 {
   "name": "@path-scout/plugin-servicenow",
   "version": "0.0.7",
+  "description": "ServiceNow plugin for path-scout",
   "private": false,
   "type": "module",
+  "license": "ISC",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -11,14 +13,21 @@
       "import": "./dist/index.js"
     }
   },
+  "engines": {
+    "node": ">=20.10.0"
+  },
   "scripts": {
     "build": "tsc --build",
     "dev": "tsc --build --watch",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist *.tsbuildinfo"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@path-scout/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@path-scout/core": "workspace:*",
+    "@types/node": "^20.0.0"
   },
   "files": [
     "dist"
