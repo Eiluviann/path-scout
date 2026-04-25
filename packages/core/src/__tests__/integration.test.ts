@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { assert, beforeEach, describe, expect, it } from 'vitest';
 import { interpolate } from '../interpolation.js';
 import { parseQuery } from '../parser.js';
 import { Trie } from '../trie.js';
@@ -67,9 +67,9 @@ describe('Full pipeline integration', () => {
   it('resolves a simple instance path', () => {
     const segments = parseQuery('dev');
     const match = trie.match(segments);
-    expect(match).not.toBeNull();
+    assert(match !== null);
 
-    const args = interpolate(match!.args, match!.getCapturedWildcards());
+    const args = interpolate(match.args, match.getCapturedWildcards());
     const url = openInstance.resolve(args);
     expect(url).toBe('https://dev.service-now.com');
   });
@@ -77,9 +77,9 @@ describe('Full pipeline integration', () => {
   it('resolves a table path', () => {
     const segments = parseQuery('dev/incident');
     const match = trie.match(segments);
-    expect(match).not.toBeNull();
+    assert(match !== null);
 
-    const args = interpolate(match!.args, match!.getCapturedWildcards());
+    const args = interpolate(match.args, match.getCapturedWildcards());
     const url = openTable.resolve(args);
     expect(url).toBe('https://dev.service-now.com/incident_list.do');
   });
@@ -87,9 +87,9 @@ describe('Full pipeline integration', () => {
   it('resolves a table path with inline params passed as static arg', () => {
     const segments = parseQuery('prod/sc_req_item');
     const match = trie.match(segments);
-    expect(match).not.toBeNull();
+    assert(match !== null);
 
-    const args = interpolate({ ...match!.args, filter: 'active=true' }, match!.getCapturedWildcards());
+    const args = interpolate({ ...match.args, filter: 'active=true' }, match.getCapturedWildcards());
     const url = openTable.resolve(args);
     expect(url).toBe('https://prod.service-now.com/sc_req_item_list.do?sysparm_query=active=true');
   });

@@ -160,11 +160,11 @@ export default defineConfig({
         _args: { env: '{{sn:env}}' },
         'catit#{{sn:sys_id}}': {
           _action: sn.openCatalogItemOnPortal,
-          _args: { env: '{{sn:env}}', sysId: '{{sn:sys_id}}' },
+          _args: { env: '{{sn:env}}', sys_id: '{{sn:sys_id}}' },
         },
         'ordguide#{{sn:sys_id}}': {
           _action: sn.openOrderGuideOnPortal,
-          _args: { env: '{{sn:env}}', sysId: '{{sn:sys_id}}' },
+          _args: { env: '{{sn:env}}', sys_id: '{{sn:sys_id}}' },
         },
         '{{word}}': {
           _action: sn.openPortalPage,
@@ -193,7 +193,7 @@ export default defineConfig({
       },
       '{{sn:table}}#{{sn:sys_id}}': {
         _action: sn.openRecordById,
-        _args: { env: '{{sn:env}}', table: '{{sn:table}}', sysId: '{{sn:sys_id}}' },
+        _args: { env: '{{sn:env}}', table: '{{sn:table}}', sys_id: '{{sn:sys_id}}' },
       },
       '{{sn:table}}': {
         _action: sn.openTableList,
