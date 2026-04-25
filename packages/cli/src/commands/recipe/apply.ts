@@ -2,12 +2,13 @@ import { defineCommand } from 'citty';
 import { consola } from 'consola';
 import * as p from '@clack/prompts';
 import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { runPnpm } from '../../utils/pnpm.js';
 import { servicenowRecipe } from './recipes/servicenow.js';
 
 const recipes = [servicenowRecipe];
-const CONFIG_DIR = join(process.env.HOME!, '.config', 'path-scout');
+const CONFIG_DIR = join(homedir(), '.config', 'path-scout');
 const CONFIG_PATH = join(CONFIG_DIR, 'path-scout.config.ts');
 const PLUGIN_DIR = join(CONFIG_DIR, '.npm');
 

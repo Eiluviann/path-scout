@@ -1,8 +1,8 @@
 import { defineCommand } from 'citty';
 import { consola } from 'consola';
 import { isMac, isWindows } from '../service/platform.js';
-import { launchdStop } from '../service/launchd.js';
-import { systemdStop } from '../service/systemd.js';
+import { launchdStop, launchdIsInstalled } from '../service/launchd.js';
+import { systemdStop, systemdIsInstalled } from '../service/systemd.js';
 
 export const stop = defineCommand({
   meta: {
@@ -13,6 +13,12 @@ export const stop = defineCommand({
     if (isWindows()) {
       consola.warn('Service management is not yet supported on Windows.');
       consola.info('If path-scout is running in a terminal, press Ctrl+C to stop it.');
+      process.exit(0);
+    }
+
+    const installed = isMac() ? launchdIsInstalled() : systemdIsInstalled();
+    if (!installed) {
+      consola.warn('path-scout service is not installed.');
       process.exit(0);
     }
 

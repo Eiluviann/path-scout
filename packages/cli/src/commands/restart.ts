@@ -1,8 +1,8 @@
 import { defineCommand } from 'citty';
 import { consola } from 'consola';
 import { isMac, isWindows } from '../service/platform.js';
-import { launchdRestart } from '../service/launchd.js';
-import { systemdRestart } from '../service/systemd.js';
+import { launchdRestart, launchdIsInstalled } from '../service/launchd.js';
+import { systemdRestart, systemdIsInstalled } from '../service/systemd.js';
 
 export const restart = defineCommand({
   meta: {
@@ -13,6 +13,12 @@ export const restart = defineCommand({
     if (isWindows()) {
       consola.warn('Service management is not yet supported on Windows.');
       consola.info('Stop path-scout manually and run path-scout start again.');
+      process.exit(0);
+    }
+
+    const installed = isMac() ? launchdIsInstalled() : systemdIsInstalled();
+    if (!installed) {
+      consola.warn('path-scout service is not installed.');
       process.exit(0);
     }
 

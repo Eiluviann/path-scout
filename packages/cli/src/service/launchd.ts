@@ -1,10 +1,11 @@
-import { execSync, spawnSync } from 'node:child_process';
+import { execSync } from 'node:child_process';
 import { writeFileSync, existsSync, rmSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 
 const PLIST_LABEL = 'com.path-scout.server';
 const PLIST_PATH = join(
-  process.env.HOME!,
+  homedir(),
   'Library/LaunchAgents',
   `${PLIST_LABEL}.plist`
 );
@@ -15,7 +16,8 @@ const PLIST_PATH = join(
  * @param execPath - Absolute path to the path-scout executable
  * @param port - Port the server should run on
  */
-function generatePlist(execPath: string, port: number): string {
+function generatePlist(execPath: string): string {
+  const home = homedir();
   return `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -27,19 +29,14 @@ function generatePlist(execPath: string, port: number): string {
     <string>${execPath}</string>
     <string>start</string>
   </array>
-  <key>EnvironmentVariables</key>
-  <dict>
-    <key>PORT</key>
-    <string>${port}</string>
-  </dict>
   <key>RunAtLoad</key>
   <true/>
   <key>KeepAlive</key>
   <true/>
   <key>StandardOutPath</key>
-  <string>${process.env.HOME}/.config/path-scout/logs/stdout.log</string>
+  <string>${home}/.config/path-scout/logs/stdout.log</string>
   <key>StandardErrorPath</key>
-  <string>${process.env.HOME}/.config/path-scout/logs/stderr.log</string>
+  <string>${home}/.config/path-scout/logs/stderr.log</string>
 </dict>
 </plist>`;
 }
@@ -50,8 +47,8 @@ function generatePlist(execPath: string, port: number): string {
  * @param execPath - Absolute path to the path-scout executable
  * @param port - Port the server should run on
  */
-export function launchdInstall(execPath: string, port: number): void {
-  writeFileSync(PLIST_PATH, generatePlist(execPath, port), 'utf-8');
+export function launchdInstall(execPath: string): void {
+  writeFileSync(PLIST_PATH, generatePlist(execPath), 'utf-8');
   execSync(`launchctl load ${PLIST_PATH}`);
 }
 

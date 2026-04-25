@@ -1,10 +1,11 @@
 import { defineCommand } from 'citty';
 import { consola } from 'consola';
 import { mkdirSync, existsSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { runPnpm } from '../utils/pnpm.js';
 
-const PLUGIN_DIR = join(process.env.HOME!, '.config', 'path-scout', '.npm');
+const PLUGIN_DIR = join(homedir(), '.config', 'path-scout', '.npm');
 
 export const add = defineCommand({
   meta: {
@@ -26,7 +27,7 @@ export const add = defineCommand({
     consola.start(`Installing ${args.plugin}…`);
 
     try {
-      runPnpm(`install ${args.plugin} --prefix ${PLUGIN_DIR}`);
+      runPnpm(`add ${args.plugin} --prefix ${PLUGIN_DIR}`);
       consola.success(`${args.plugin} installed successfully`);
       consola.info(`Add it to your config at ~/.config/path-scout/path-scout.config.ts`);
     } catch (error) {

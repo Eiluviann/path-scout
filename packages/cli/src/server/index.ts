@@ -139,8 +139,8 @@ export class Server {
    */
   private renderNoMatch(query: string, port: number): string {
     return noMatchHtml
-      .replace('{{query}}', query)
-      .replace('{{port}}', String(port));
+      .replace('{{query}}', () => query)
+      .replace('{{port}}', () => String(port));
   }
 
   /**

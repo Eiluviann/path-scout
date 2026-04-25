@@ -2,9 +2,10 @@ import { defineCommand } from 'citty';
 import { consola } from 'consola';
 import * as p from '@clack/prompts';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-const CONFIG_DIR = join(process.env.HOME!, '.config', 'path-scout');
+const CONFIG_DIR = join(homedir(), '.config', 'path-scout');
 const CONFIG_PATH = join(CONFIG_DIR, 'path-scout.config.ts');
 
 export const init = defineCommand({
