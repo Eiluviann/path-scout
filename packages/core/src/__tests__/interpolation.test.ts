@@ -1,48 +1,33 @@
-import { describe, it, expect } from 'vitest';
-import { interpolate } from '../interpolation.js';
+import { describe, expect, it } from 'vitest';
 import { PathScoutError } from '../errors.js';
+import { interpolate } from '../interpolation.js';
 
 describe('interpolate', () => {
   describe('static values', () => {
     it('passes through static values as-is', () => {
-      const result = interpolate(
-        { filter: 'active=true' },
-        {}
-      );
+      const result = interpolate({ filter: 'active=true' }, {});
       expect(result).toEqual({ filter: 'active=true' });
     });
 
     it('handles multiple static values', () => {
-      const result = interpolate(
-        { filter: 'active=true', category: 'software' },
-        {}
-      );
+      const result = interpolate({ filter: 'active=true', category: 'software' }, {});
       expect(result).toEqual({ filter: 'active=true', category: 'software' });
     });
   });
 
   describe('wildcard references', () => {
     it('resolves a single wildcard reference', () => {
-      const result = interpolate(
-        { env: '{{env}}' },
-        { env: 'dev' }
-      );
+      const result = interpolate({ env: '{{env}}' }, { env: 'dev' });
       expect(result).toEqual({ env: 'dev' });
     });
 
     it('resolves multiple wildcard references', () => {
-      const result = interpolate(
-        { env: '{{env}}', table: '{{sn:table}}' },
-        { env: 'dev', 'sn:table': 'sc_req_item' }
-      );
+      const result = interpolate({ env: '{{env}}', table: '{{sn:table}}' }, { env: 'dev', 'sn:table': 'sc_req_item' });
       expect(result).toEqual({ env: 'dev', table: 'sc_req_item' });
     });
 
     it('resolves embedded wildcard references', () => {
-      const result = interpolate(
-        { url: 'https://{{env}}.service-now.com' },
-        { env: 'dev' }
-      );
+      const result = interpolate({ url: 'https://{{env}}.service-now.com' }, { env: 'dev' });
       expect(result).toEqual({ url: 'https://dev.service-now.com' });
     });
 
@@ -71,17 +56,11 @@ describe('interpolate', () => {
 
   describe('error handling', () => {
     it('throws PathScoutError for unresolved wildcard reference', () => {
-      expect(() => interpolate(
-        { env: '{{env}}' },
-        {}
-      )).toThrow(PathScoutError);
+      expect(() => interpolate({ env: '{{env}}' }, {})).toThrow(PathScoutError);
     });
 
     it('throws with a descriptive message', () => {
-      expect(() => interpolate(
-        { env: '{{env}}' },
-        {}
-      )).toThrow('env');
+      expect(() => interpolate({ env: '{{env}}' }, {})).toThrow('env');
     });
   });
 

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { buildActions } from '../actions.js';
 
 const config = {
@@ -19,31 +19,23 @@ const actions = buildActions(config);
 describe('buildActions', () => {
   describe('openInstance', () => {
     it('returns the base URL for the env', () => {
-      expect(actions.openInstance.resolve({ env: 'dev' })).toBe(
-        'https://myinstance-dev.service-now.com'
-      );
+      expect(actions.openInstance.resolve({ env: 'dev' })).toBe('https://myinstance-dev.service-now.com');
     });
   });
 
   describe('instanceLogin', () => {
     it('returns the login page URL', () => {
-      expect(actions.instanceLogin.resolve({ env: 'prod' })).toBe(
-        'https://myinstance.service-now.com/login.do'
-      );
+      expect(actions.instanceLogin.resolve({ env: 'prod' })).toBe('https://myinstance.service-now.com/login.do');
     });
   });
 
   describe('openPortal', () => {
     it('uses the configured portal suffix', () => {
-      expect(actions.openPortal.resolve({ env: 'dev' })).toBe(
-        'https://myinstance-dev.service-now.com/esc'
-      );
+      expect(actions.openPortal.resolve({ env: 'dev' })).toBe('https://myinstance-dev.service-now.com/esc');
     });
 
     it('defaults to sp when portal is not configured', () => {
-      expect(actions.openPortal.resolve({ env: 'prod' })).toBe(
-        'https://myinstance.service-now.com/sp'
-      );
+      expect(actions.openPortal.resolve({ env: 'prod' })).toBe('https://myinstance.service-now.com/sp');
     });
   });
 
@@ -71,13 +63,13 @@ describe('buildActions', () => {
 
   describe('openRecordById', () => {
     it('builds the record URL with sys_id', () => {
-      expect(actions.openRecordById.resolve({
-        env: 'dev',
-        table: 'incident',
-        sys_id: 'abc1234567890abc1234567890abc123',
-      })).toBe(
-        'https://myinstance-dev.service-now.com/incident.do?sys_id=abc1234567890abc1234567890abc123'
-      );
+      expect(
+        actions.openRecordById.resolve({
+          env: 'dev',
+          table: 'incident',
+          sys_id: 'abc1234567890abc1234567890abc123',
+        })
+      ).toBe('https://myinstance-dev.service-now.com/incident.do?sys_id=abc1234567890abc1234567890abc123');
     });
   });
 

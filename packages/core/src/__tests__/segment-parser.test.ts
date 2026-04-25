@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach} from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { compileSegmentPattern, parseSegmentKey } from '../utils/segment-parser.js';
 import { WildcardRegistry } from '../wildcard-registry.js';
-import { parseSegmentKey, compileSegmentPattern } from '../utils/segment-parser.js';
 
 describe('parseSegmentKey', () => {
   let registry: WildcardRegistry;
@@ -123,7 +123,7 @@ describe('compileSegmentPattern', () => {
     const regex = compileSegmentPattern(tokens);
     const match = regex.exec('hello-world');
     expect(match).not.toBeNull();
-    expect(match![1]).toBe('hello');
-    expect(match![2]).toBe('world');
+    expect(match?.[1]).toBe('hello');
+    expect(match?.[2]).toBe('world');
   });
 });

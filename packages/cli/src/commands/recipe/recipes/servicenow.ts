@@ -20,7 +20,7 @@ export const servicenowRecipe: Recipe = {
         placeholder: 'dev',
         validate: (v) => {
           if (!v) return 'Alias is required';
-          if (envs.find(e => e.alias === v)) return 'Alias already exists';
+          if (envs.find((e) => e.alias === v)) return 'Alias already exists';
         },
       });
 
@@ -32,7 +32,9 @@ export const servicenowRecipe: Recipe = {
       const url = await p.text({
         message: 'URL subdomain',
         placeholder: 'myinstance-dev',
-        validate: (v) => { if (!v) return 'URL subdomain is required'; },
+        validate: (v) => {
+          if (!v) return 'URL subdomain is required';
+        },
       });
 
       if (p.isCancel(url)) {
@@ -82,15 +84,11 @@ export const servicenowRecipe: Recipe = {
       process.exit(0);
     }
 
-    values['envs'] = JSON.stringify(
-      Object.fromEntries(
-        envs.map(({ alias, url, portal }) => [alias, { url, portal }])
-      )
-    );
+    values.envs = JSON.stringify(Object.fromEntries(envs.map(({ alias, url, portal }) => [alias, { url, portal }])));
 
-    values['aliases'] = JSON.stringify(
+    values.aliases = JSON.stringify(
       Object.fromEntries(
-        (aliases as string[]).map(a => {
+        (aliases as string[]).map((a) => {
           const [key, value] = a.split(':');
           return [key, value];
         })
@@ -101,13 +99,11 @@ export const servicenowRecipe: Recipe = {
   },
 
   generateConfig(values) {
-    const envs = JSON.parse(values['envs']);
-    const aliases = JSON.parse(values['aliases']);
+    const envs = JSON.parse(values.envs) as Record<string, { url: string; portal: string }>;
+    const aliases = JSON.parse(values.aliases) as Record<string, string>;
 
     const envsStr = Object.entries(envs)
-      .map(([alias, { url, portal }]: [string, any]) =>
-        `    ${alias}: { url: '${url}', portal: '${portal}' },`
-      )
+      .map(([alias, { url, portal }]) => `    ${alias}: { url: '${url}', portal: '${portal}' },`)
       .join('\n');
 
     const aliasesStr = Object.entries(aliases)

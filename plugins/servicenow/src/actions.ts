@@ -8,9 +8,7 @@ import type { ServiceNowPluginConfig } from './types.js';
  * @param config - The ServiceNow plugin configuration
  * @returns A record of action names to action definitions
  */
-export function buildActions(
-  config: ServiceNowPluginConfig
-): Record<string, ActionDefinition> {
+export function buildActions(config: ServiceNowPluginConfig): Record<string, ActionDefinition> {
   /**
    * Resolves an env alias to its full ServiceNow base URL.
    */
@@ -53,8 +51,7 @@ export function buildActions(
     searchInstance: {
       name: 'Search Instance',
       description: 'Performs a global search on the ServiceNow env',
-      resolve: ({ env, text }) =>
-        `${baseUrl(env)}/textsearch_search.do?sysparm_search=${encodeURIComponent(text)}`,
+      resolve: ({ env, text }) => `${baseUrl(env)}/textsearch_search.do?sysparm_search=${encodeURIComponent(text)}`,
     },
 
     instanceLogin: {
@@ -92,36 +89,31 @@ export function buildActions(
     openPortalRecord: {
       name: 'Open Portal Record',
       description: 'Opens the Service Portal configuration record for the configured portal',
-      resolve: ({ env }) =>
-        `${baseUrl(env)}/sp_portal.do?sysparm_query=url_suffix=${portal(env)}`,
+      resolve: ({ env }) => `${baseUrl(env)}/sp_portal.do?sysparm_query=url_suffix=${portal(env)}`,
     },
 
     openPortalPage: {
       name: 'Open Portal Page',
       description: 'Opens a specific Service Portal page by ID using the configured portal',
-      resolve: ({ env, word: page }) =>
-        `${baseUrl(env)}/${portal(env)}?id=${page}`,
+      resolve: ({ env, word: page }) => `${baseUrl(env)}/${portal(env)}?id=${page}`,
     },
 
     openCatalogItemOnPortal: {
       name: 'Open Catalog Item on Portal',
       description: 'Opens a catalog item on the Service Portal by sys_id',
-      resolve: ({ env, sys_id }) =>
-        `${baseUrl(env)}/${portal(env)}?id=sc_cat_item&sys_id=${sys_id}`,
+      resolve: ({ env, sys_id }) => `${baseUrl(env)}/${portal(env)}?id=sc_cat_item&sys_id=${sys_id}`,
     },
 
     openOrderGuideOnPortal: {
       name: 'Open Order Guide on Portal',
       description: 'Opens an order guide on the Service Portal by sys_id',
-      resolve: ({ env, sys_id }) =>
-        `${baseUrl(env)}/${portal(env)}?id=sc_cat_item_guide&sys_id=${sys_id}`,
+      resolve: ({ env, sys_id }) => `${baseUrl(env)}/${portal(env)}?id=sc_cat_item_guide&sys_id=${sys_id}`,
     },
 
     openNewRecordForm: {
       name: 'Open New Record Form',
       description: 'Opens a blank form to create a new record in a table',
-      resolve: ({ env, table }) =>
-        `${baseUrl(env)}/${resolveTable(table)}.do?sys_id=-1`,
+      resolve: ({ env, table }) => `${baseUrl(env)}/${resolveTable(table)}.do?sys_id=-1`,
     },
 
     openRecordForm: {
@@ -136,15 +128,13 @@ export function buildActions(
     openTableConfig: {
       name: 'Open Table Config',
       description: 'Opens the configuration record for a table',
-      resolve: ({ env, table }) =>
-        `${baseUrl(env)}/sys_db_object.do?sysparm_query=name=${resolveTable(table)}`,
+      resolve: ({ env, table }) => `${baseUrl(env)}/sys_db_object.do?sysparm_query=name=${resolveTable(table)}`,
     },
 
     openTableList: {
       name: 'Open Table List',
       description: 'Opens the list view for a ServiceNow table',
-      resolve: ({ env, table }) =>
-        `${baseUrl(env)}/${resolveTable(table)}_list.do`,
+      resolve: ({ env, table }) => `${baseUrl(env)}/${resolveTable(table)}_list.do`,
     },
 
     searchTable: {
@@ -164,8 +154,7 @@ export function buildActions(
     openRecordById: {
       name: 'Open Record by ID',
       description: 'Opens a specific record by its sys_id',
-      resolve: ({ env, table, sys_id }) =>
-        `${baseUrl(env)}/${resolveTable(table)}.do?sys_id=${sys_id}`,
+      resolve: ({ env, table, sys_id }) => `${baseUrl(env)}/${resolveTable(table)}.do?sys_id=${sys_id}`,
     },
 
     searchTableByFilter: {

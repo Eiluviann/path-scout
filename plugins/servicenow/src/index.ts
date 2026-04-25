@@ -1,7 +1,7 @@
-import type { Plugin, ActionDefinition } from '@path-scout/core';
+import type { ActionDefinition, Plugin } from '@path-scout/core';
+import { buildActions } from './actions.js';
 import type { ServiceNowPluginConfig } from './types.js';
 import { buildWildcards } from './wildcards.js';
-import { buildActions } from './actions.js';
 
 /**
  * The ServiceNow plugin for Path Scout.
@@ -40,5 +40,4 @@ export class ServiceNowPlugin implements Plugin {
   }
 }
 
-export type { ServiceNowPluginConfig } from './types.js';
-export type { SnEnv } from './types.js';
+export type { ServiceNowPluginConfig, SnEnv } from './types.js';

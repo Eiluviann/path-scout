@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { interpolate } from '../interpolation.js';
 import { parseQuery } from '../parser.js';
 import { Trie } from '../trie.js';
-import { WildcardRegistry } from '../wildcard-registry.js';
-import { interpolate } from '../interpolation.js';
-import type { RouteConfig } from '../types/route.types.js';
 import type { ActionDefinition } from '../types/action.types.js';
+import type { RouteConfig } from '../types/route.types.js';
+import { WildcardRegistry } from '../wildcard-registry.js';
 
 const openTable: ActionDefinition = {
   name: 'Open Table',
@@ -89,10 +89,7 @@ describe('Full pipeline integration', () => {
     const match = trie.match(segments);
     expect(match).not.toBeNull();
 
-    const args = interpolate(
-      { ...match!.args, filter: 'active=true' },
-      match!.getCapturedWildcards()
-    );
+    const args = interpolate({ ...match!.args, filter: 'active=true' }, match!.getCapturedWildcards());
     const url = openTable.resolve(args);
     expect(url).toBe('https://prod.service-now.com/sc_req_item_list.do?sysparm_query=active=true');
   });

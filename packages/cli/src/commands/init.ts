@@ -1,9 +1,9 @@
-import { defineCommand } from 'citty';
-import { consola } from 'consola';
-import * as p from '@clack/prompts';
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import * as p from '@clack/prompts';
+import { defineCommand } from 'citty';
+import { consola } from 'consola';
 
 const CONFIG_DIR = join(homedir(), '.config', 'path-scout');
 const CONFIG_PATH = join(CONFIG_DIR, 'path-scout.config.ts');
@@ -34,7 +34,7 @@ export const init = defineCommand({
       defaultValue: '7000',
       validate: (value) => {
         const n = Number(value);
-        if (isNaN(n) || n < 1 || n > 65535) return 'Please enter a valid port number';
+        if (Number.isNaN(n) || n < 1 || n > 65535) return 'Please enter a valid port number';
       },
     });
 

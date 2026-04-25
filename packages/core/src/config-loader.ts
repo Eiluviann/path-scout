@@ -1,14 +1,12 @@
-import { createJiti } from 'jiti';
-import { watch, FSWatcher } from 'chokidar';
 import { existsSync } from 'node:fs';
-import { homedir } from 'node:os';
-import { join, dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { type FSWatcher, watch } from 'chokidar';
+import { createJiti } from 'jiti';
+import { Trie } from './trie.js';
 import type { PathScoutConfig } from './types/config.types.js';
 import { CONFIG_LOCATIONS } from './types/config.types.js';
 import { WildcardRegistry } from './wildcard-registry.js';
-import { Trie } from './trie.js';
-
 
 /**
  * Orchestrates config loading, registry building, trie compilation and file watching.
@@ -18,8 +16,6 @@ import { Trie } from './trie.js';
 export class ConfigLoader {
   /** The current active trie — swapped atomically on successful reload */
   private trie: Trie = new Trie();
-  /** The current active config */
-  private config: PathScoutConfig | null = null;
   /** Resolved path to the config file */
   private configPath: string | null = null;
   /** File watcher instance */
@@ -77,8 +73,8 @@ export class ConfigLoader {
 
     throw new Error(
       `No config file found. Looked in:\n` +
-      CONFIG_LOCATIONS.map(l => `  - ${l}`).join('\n') +
-      `\nCreate a path-scout.config.ts in one of these locations.`
+        CONFIG_LOCATIONS.map((l) => `  - ${l}`).join('\n') +
+        `\nCreate a path-scout.config.ts in one of these locations.`
     );
   }
 
@@ -88,8 +84,10 @@ export class ConfigLoader {
    * On failure, throws — callers handle the error differently on initial load vs reload.
    */
   private async load(): Promise<void> {
+    if (!this.configPath) throw new Error('Internal: load() called before configPath was resolved');
+
     const coreIndex = join(dirname(fileURLToPath(import.meta.url)), 'index.js');
-    const jiti = createJiti(this.configPath!, {
+    const jiti = createJiti(this.configPath, {
       moduleCache: false,
       interopDefault: true,
       alias: {
@@ -97,7 +95,7 @@ export class ConfigLoader {
       },
     });
 
-    const config = await jiti.import(this.configPath!) as PathScoutConfig;
+    const config = (await jiti.import(this.configPath)) as PathScoutConfig;
 
     const registry = new WildcardRegistry();
 
@@ -111,10 +109,13 @@ export class ConfigLoader {
     trie.build(config.routes, registry);
 
     this.trie = trie;
-    this.config = config;
 
-    this.trieUpdateCallbacks.forEach(cb => cb(this.trie));
-    this.configUpdateCallbacks.forEach(cb => cb(this.config!));
+    this.trieUpdateCallbacks.forEach((cb) => {
+      cb(this.trie);
+    });
+    this.configUpdateCallbacks.forEach((cb) => {
+      cb(config);
+    });
   }
 
   /**
@@ -122,7 +123,9 @@ export class ConfigLoader {
    * On change, attempts a reload — keeps previous trie on failure.
    */
   private startWatcher(): void {
-    this.watcher = watch(this.configPath!, {
+    if (!this.configPath) return;
+
+    this.watcher = watch(this.configPath, {
       ignoreInitial: true,
     });
 
@@ -130,10 +133,7 @@ export class ConfigLoader {
       try {
         await this.load();
       } catch (error) {
-        console.error(
-          `[path-scout] Config reload failed — keeping previous config active.\n`,
-          error
-        );
+        console.error(`[path-scout] Config reload failed — keeping previous config active.\n`, error);
       }
     });
   }

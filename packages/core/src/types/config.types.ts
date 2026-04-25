@@ -1,7 +1,7 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import type { RouteConfig } from "./route.types.js";
-import type { Plugin } from "./plugin.types.js";
+import type { Plugin } from './plugin.types.js';
+import type { RouteConfig } from './route.types.js';
 
 /**
  * The complete Path Scout configuration exported from path-scout.config.ts.

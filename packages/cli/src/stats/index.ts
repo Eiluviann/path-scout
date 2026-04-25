@@ -1,7 +1,7 @@
-import Database from 'better-sqlite3';
 import { existsSync, mkdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import Database from 'better-sqlite3';
 import type { UsageStat } from '../types/stats.types.js';
 
 const DB_DIR = join(homedir(), '.config', 'path-scout');
@@ -52,16 +52,18 @@ export class StatsStore {
    * @param stat - The usage stat to record
    */
   record(stat: UsageStat): void {
-    this.db.prepare(`
+    this.db
+      .prepare(`
       INSERT INTO stats (query, user, matched, route, timestamp)
       VALUES (@query, @user, @matched, @route, @timestamp)
-    `).run({
-      query: stat.query,
-      user: stat.user ?? null,
-      matched: stat.matched ? 1 : 0,
-      route: stat.route ?? null,
-      timestamp: stat.timestamp,
-    });
+    `)
+      .run({
+        query: stat.query,
+        user: stat.user ?? null,
+        matched: stat.matched ? 1 : 0,
+        route: stat.route ?? null,
+        timestamp: stat.timestamp,
+      });
   }
 
   /**
@@ -74,7 +76,8 @@ export class StatsStore {
    * @param limit - Maximum number of suggestions to return
    */
   suggest(partial: string, user?: string, limit = 10): string[] {
-    const rows = this.db.prepare(`
+    const rows = this.db
+      .prepare(`
       SELECT query, COUNT(*) as frequency
       FROM stats
       WHERE matched = 1
@@ -83,13 +86,14 @@ export class StatsStore {
       GROUP BY query
       ORDER BY frequency DESC
       LIMIT @limit
-    `).all({
-      partial: `${partial}%`,
-      user: user ?? null,
-      limit,
-    }) as { query: string; frequency: number }[];
+    `)
+      .all({
+        partial: `${partial}%`,
+        user: user ?? null,
+        limit,
+      }) as { query: string; frequency: number }[];
 
-    return rows.map(r => r.query);
+    return rows.map((r) => r.query);
   }
 
   /**

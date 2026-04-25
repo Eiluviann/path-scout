@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { WildcardRegistry, RegisteredWildcard } from '../wildcard-registry.js';
-import { CollisionError, NamespaceCollisionError, ValidationError, UnknownWildcardError } from '../errors.js';
+import { describe, expect, it } from 'vitest';
+import { CollisionError, NamespaceCollisionError, UnknownWildcardError, ValidationError } from '../errors.js';
+import { RegisteredWildcard, WildcardRegistry } from '../wildcard-registry.js';
 
 describe('WildcardRegistry', () => {
   describe('constructor', () => {
@@ -25,11 +25,13 @@ describe('WildcardRegistry', () => {
 
     it('throws CollisionError when registering a duplicate core wildcard', () => {
       const registry = new WildcardRegistry();
-      expect(() => registry.register({
-        name: '*',
-        description: 'Duplicate wildcard',
-        pattern: /.+/,
-      })).toThrow(CollisionError);
+      expect(() =>
+        registry.register({
+          name: '*',
+          description: 'Duplicate wildcard',
+          pattern: /.+/,
+        })
+      ).toThrow(CollisionError);
     });
   });
 
@@ -44,7 +46,7 @@ describe('WildcardRegistry', () => {
             description: 'ServiceNow environment',
             examples: ['dev', 'test', 'prod'],
             pattern: /dev|test|prod/,
-          }
+          },
         ],
         actions: {},
       });
@@ -60,10 +62,12 @@ describe('WildcardRegistry', () => {
 
     it('registers plugin with no wildcards', () => {
       const registry = new WildcardRegistry();
-      expect(() => registry.registerPlugin({
-        namespace: 'gh',
-        actions: {},
-      })).not.toThrow();
+      expect(() =>
+        registry.registerPlugin({
+          namespace: 'gh',
+          actions: {},
+        })
+      ).not.toThrow();
     });
   });
 

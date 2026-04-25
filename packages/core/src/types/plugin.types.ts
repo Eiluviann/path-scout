@@ -1,5 +1,5 @@
-import type { Wildcard } from './wildcard.types.js';
 import type { ActionDefinition } from './action.types.js';
+import type { Wildcard } from './wildcard.types.js';
 
 /**
  * Contract for a Path Scout plugin.

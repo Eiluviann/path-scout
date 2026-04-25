@@ -22,10 +22,7 @@ export function interpolate(
   capturedWildcards: Record<string, string>
 ): Record<string, string> {
   return Object.fromEntries(
-    Object.entries(args).map(([param, template]) => [
-      param,
-      resolveTemplate(template, capturedWildcards),
-    ])
+    Object.entries(args).map(([param, template]) => [param, resolveTemplate(template, capturedWildcards)])
   );
 }
 
@@ -39,17 +36,14 @@ export function interpolate(
  * @returns The resolved string value
  * @throws {PathScoutError} If a referenced wildcard is not found in capturedWildcards
  */
-function resolveTemplate(
-  template: string,
-  capturedWildcards: Record<string, string>
-): string {
+function resolveTemplate(template: string, capturedWildcards: Record<string, string>): string {
   if (!template.includes('{{')) return template;
 
   return template.replace(/\{\{(.+?)\}\}/g, (_, name) => {
     if (!(name in capturedWildcards)) {
       throw new PathScoutError(
         `Interpolation failed: "{{${name}}}" not found in captured wildcards. ` +
-        `Ensure the wildcard is present in the route path.`
+          `Ensure the wildcard is present in the route path.`
       );
     }
 

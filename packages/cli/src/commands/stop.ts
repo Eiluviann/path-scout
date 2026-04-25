@@ -1,8 +1,8 @@
 import { defineCommand } from 'citty';
 import { consola } from 'consola';
+import { launchdIsInstalled, launchdStop } from '../service/launchd.js';
 import { isMac, isWindows } from '../service/platform.js';
-import { launchdStop, launchdIsInstalled } from '../service/launchd.js';
-import { systemdStop, systemdIsInstalled } from '../service/systemd.js';
+import { systemdIsInstalled, systemdStop } from '../service/systemd.js';
 
 export const stop = defineCommand({
   meta: {

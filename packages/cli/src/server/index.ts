@@ -1,11 +1,10 @@
-import { Hono } from 'hono';
-import { serve } from '@hono/node-server';
 import { readFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parseQuery, interpolate } from '@path-scout/core';
-import type { Trie } from '@path-scout/core';
-import type { PathScoutConfig } from '@path-scout/core';
+import { serve } from '@hono/node-server';
+import type { PathScoutConfig, Trie } from '@path-scout/core';
+import { interpolate, parseQuery } from '@path-scout/core';
+import { Hono } from 'hono';
 import type { StatsStore } from '../stats/index.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -114,11 +113,7 @@ export class Server {
 
       const suggestions = this.stats.suggest(partial, user);
 
-      return c.json([
-        partial,
-        suggestions,
-        [],
-      ]);
+      return c.json([partial, suggestions, []]);
     });
 
     this.app.get('/opensearch.xml', (c) => {
@@ -138,9 +133,7 @@ export class Server {
    * @param port - The port the server is running on
    */
   private renderNoMatch(query: string, port: number): string {
-    return noMatchHtml
-      .replace('{{query}}', () => query)
-      .replace('{{port}}', () => String(port));
+    return noMatchHtml.replace('{{query}}', () => query).replace('{{port}}', () => String(port));
   }
 
   /**
