@@ -2,6 +2,7 @@
 export { defineConfig } from '@path-scout/core';
 
 import { defineCommand, runMain } from 'citty';
+import pkg from '../package.json' with { type: 'json' };
 import { start } from './commands/start.js';
 import { stop } from './commands/stop.js';
 import { restart } from './commands/restart.js';
@@ -14,7 +15,7 @@ import { recipe } from './commands/recipe/index.js';
 const main = defineCommand({
   meta: {
     name: 'path-scout',
-    version: '0.0.1',
+    version: pkg.version,
     description: 'A blazing fast browser bookmark redirector',
   },
   subCommands: {
