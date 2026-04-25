@@ -1,5 +1,4 @@
-import type { Plugin } from '@path-scout/core';
-import type { ActionDefinition } from '@path-scout/core';
+import type { Plugin, ActionDefinition } from '@path-scout/core';
 import type { ServiceNowPluginConfig } from './types.js';
 import { buildWildcards } from './wildcards.js';
 import { buildActions } from './actions.js';

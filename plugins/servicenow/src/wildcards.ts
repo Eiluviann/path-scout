@@ -8,13 +8,19 @@ import type { ServiceNowPluginConfig } from './types.js';
  * @returns An array of wildcard definitions to register with the registry
  */
 export function buildWildcards(config: ServiceNowPluginConfig): Wildcard[] {
+  const envKeys = Object.keys(config.envs);
+
+  if (envKeys.length === 0) {
+    throw new Error('ServiceNowPlugin: envs must contain at least one environment.');
+  }
+
   const wildcards: Wildcard[] = [
     {
       name: 'env',
       description: 'A configured ServiceNow environment alias e.g. dev, prod',
-      examples: Object.keys(config.envs),
-      patternFn: () => new RegExp(
-        Object.keys(config.envs)
+      examples: envKeys,
+      pattern: new RegExp(
+        envKeys
           .map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
           .join('|')
       ),
@@ -40,7 +46,7 @@ export function buildWildcards(config: ServiceNowPluginConfig): Wildcard[] {
       name: 'filter',
       description: 'A configured ServiceNow filter alias e.g. active, mine',
       examples: filterKeys,
-      patternFn: () => new RegExp(
+      pattern: new RegExp(
         filterKeys
           .map(f => f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
           .join('|')
