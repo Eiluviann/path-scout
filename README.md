@@ -2,7 +2,7 @@
 
 **The shortest path between you and your tools**
 
-*\*cookies not included*
+*\*scout cookies not included*
 
 ---
 
